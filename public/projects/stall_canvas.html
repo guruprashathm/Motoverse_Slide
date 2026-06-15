@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>RE Future Roadmap</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syncopate:wght@400;700&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#030711;font-family:'Space Grotesk',sans-serif;color:#fff}
+
+.page{
+  width:100vw;height:100vh;
+  display:grid;
+  grid-template-rows:auto 1fr auto auto;
+  padding:20px 36px 16px;
+  gap:0;
+  background:radial-gradient(ellipse at 50% 0%,#0c1428 0%,#030711 70%);
+}
+
+/* ── HEADER ── */
+.header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding-bottom:16px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.header-left .eyebrow{
+  font-size:9px;letter-spacing:0.35em;text-transform:uppercase;
+  color:rgba(249,115,22,0.6);font-family:'Syncopate',sans-serif;margin-bottom:6px;
+}
+.header-left h1{
+  font-family:'Syncopate',sans-serif;font-size:22px;font-weight:700;
+  line-height:1.1;letter-spacing:0.04em;
+}
+.header-left h1 span{color:#f97316}
+.header-badge{
+  display:flex;align-items:center;gap:6px;
+  font-size:9px;letter-spacing:0.15em;text-transform:uppercase;
+  color:rgba(249,115,22,0.7);
+  padding:5px 12px;border-radius:999px;
+  border:1px solid rgba(249,115,22,0.25);background:rgba(249,115,22,0.06);
+  white-space:nowrap;margin-top:4px;
+}
+.header-badge span{
+  width:6px;height:6px;border-radius:50%;background:#f97316;
+  animation:pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+
+/* ── TIMELINE AREA ── */
+.timeline-area{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:18px 0 8px;
+  position:relative;
+}
+
+/* Lane container: label + track side by side */
+.lane{display:flex;align-items:center;gap:12px;position:relative}
+.lane-label{
+  font-size:8px;letter-spacing:0.3em;text-transform:uppercase;
+  font-family:'Syncopate',sans-serif;
+  width:52px;flex-shrink:0;text-align:right;
+}
+.lane-top .lane-label{color:rgba(249,115,22,0.55)}
+.lane-bottom .lane-label{color:rgba(99,179,237,0.55)}
+
+.lane-track{
+  flex:1;
+  height:56px;
+  position:relative;
+}
+
+/* Connecting line between nodes */
+.lane-line{
+  position:absolute;
+  top:50%;transform:translateY(-50%);
+  left:0;right:0;height:1px;
+}
+.lane-top .lane-line{background:linear-gradient(to right,rgba(249,115,22,0.15),rgba(249,115,22,0.5) 70%,rgba(249,115,22,0.1))}
+.lane-bottom .lane-line{background:linear-gradient(to right,rgba(99,179,237,0.15),rgba(99,179,237,0.5) 75%,rgba(99,179,237,0.08))}
+
+/* Dashed future section */
+.lane-line-future{
+  position:absolute;
+  top:50%;transform:translateY(-50%);
+  height:1px;
+  border-top:1px dashed;
+}
+.lane-top .lane-line-future{border-color:rgba(249,115,22,0.25)}
+.lane-bottom .lane-line-future{border-color:rgba(99,179,237,0.2)}
+
+/* Product Node */
+.node{
+  position:absolute;top:50%;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  cursor:pointer;z-index:2;
+}
+.node.above{flex-direction:column-reverse}
+
+.node-dot{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid;
+  background:#030711;
+  position:relative;
+  transition:transform 0.2s,box-shadow 0.2s;
+}
+.node:hover .node-dot{transform:scale(1.3)}
+
+/* Legacy nodes */
+.node.legacy .node-dot{border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.05)}
+
+/* Current nodes */
+.node.current .node-dot{
+  width:18px;height:18px;
+  border-color:#f97316;background:rgba(249,115,22,0.15);
+  box-shadow:0 0 12px rgba(249,115,22,0.4);
+}
+.node.current.tripper-node .node-dot{
+  border-color:#22d3ee;background:rgba(34,211,238,0.1);
+  box-shadow:0 0 12px rgba(34,211,238,0.35);
+}
+/* Pulsing ring on current */
+.node.current .node-dot::after{
+  content:'';position:absolute;inset:-5px;border-radius:50%;
+  border:1px solid;animation:ring-pulse 2s ease-out infinite;
+}
+.node.current:not(.tripper-node) .node-dot::after{border-color:rgba(249,115,22,0.5)}
+.node.current.tripper-node .node-dot::after{border-color:rgba(34,211,238,0.4)}
+@keyframes ring-pulse{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(2.2)}}
+
+/* Future nodes */
+.node.future .node-dot{
+  width:14px;height:14px;
+  border:1.5px dashed rgba(99,179,237,0.35);
+  background:transparent;
+}
+.node.future.wingman-future .node-dot{border-color:rgba(249,115,22,0.3)}
+
+/* Active (selected) state */
+.node.selected .node-dot{
+  transform:scale(1.4);
+  box-shadow:0 0 20px rgba(249,115,22,0.6)!important;
+}
+.node.selected.tripper-node .node-dot{box-shadow:0 0 20px rgba(34,211,238,0.5)!important}
+
+/* Node label */
+.node-label{
+  font-size:9px;font-weight:600;letter-spacing:0.04em;
+  white-space:nowrap;transition:color 0.2s;
+}
+.node.legacy .node-label{color:rgba(255,255,255,0.35)}
+.node.current .node-label{color:#fff}
+.node.future .node-label{color:rgba(255,255,255,0.3)}
+.node:hover .node-label{color:rgba(255,255,255,0.8)!important}
+.node.selected .node-label{color:#f97316!important}
+.node.selected.tripper-node .node-label{color:#22d3ee!important}
+
+/* NOW badge */
+.now-badge{
+  font-size:7px;padding:1px 6px;border-radius:999px;letter-spacing:0.12em;
+  text-transform:uppercase;font-weight:700;
+}
+.now-badge.orange{background:rgba(249,115,22,0.2);color:#f97316;border:1px solid rgba(249,115,22,0.4)}
+.now-badge.cyan{background:rgba(34,211,238,0.12);color:#22d3ee;border:1px solid rgba(34,211,238,0.3)}
+.now-badge.green{background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.35)}
+
+/* FUTURE badge */
+.future-badge{
+  font-size:7px;padding:1px 6px;border-radius:999px;letter-spacing:0.12em;
+  text-transform:uppercase;
+  border:1px dashed rgba(255,255,255,0.15);color:rgba(255,255,255,0.3);
+}
+
+/* ── SPINE (YEAR AXIS) ── */
+.spine{
+  display:flex;align-items:center;gap:12px;
+  margin:8px 0;
+}
+.spine-label{font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.15);width:52px;flex-shrink:0;text-align:right}
+.spine-track{
+  flex:1;position:relative;height:24px;
+  display:flex;align-items:center;
+}
+.spine-line{
+  position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
+  height:1px;background:rgba(255,255,255,0.08);
+}
+.spine-arrow{
+  position:absolute;right:-8px;top:50%;transform:translateY(-50%);
+  border-top:4px solid transparent;border-bottom:4px solid transparent;
+  border-left:7px solid rgba(255,255,255,0.12);
+}
+.year-marker{
+  position:absolute;top:50%;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+.year-tick{width:1px;height:8px;background:rgba(255,255,255,0.15)}
+.year-text{font-size:8px;color:rgba(255,255,255,0.25);letter-spacing:0.06em;margin-top:2px}
+.year-now .year-text{color:rgba(249,115,22,0.5)}
+.year-now .year-tick{background:rgba(249,115,22,0.3);height:10px}
+
+/* ── DETAIL PANEL ── */
+.detail-panel{
+  min-height:110px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.07);
+  background:rgba(8,12,26,0.9);
+  backdrop-filter:blur(12px);
+  padding:14px 18px;
+  overflow:hidden;
+  position:relative;
+  transition:opacity 0.25s,transform 0.25s;
+}
+.detail-panel.hidden{opacity:0;pointer-events:none;transform:translateY(6px)}
+.detail-empty{
+  display:flex;align-items:center;justify-content:center;
+  height:100%;
+  font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.1em;text-transform:uppercase;
+}
+.detail-content{display:none}
+.detail-content.active{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start}
+
+.detail-left{}
+.detail-year{font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:3px}
+.detail-name{font-family:'Syncopate',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px}
+.detail-desc{font-size:10px;color:rgba(255,255,255,0.45);line-height:1.5;max-width:260px}
+
+.detail-features{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.feature-tag{
+  font-size:9px;padding:2px 8px;border-radius:999px;
+  border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);
+  letter-spacing:0.04em;
+}
+
+.detail-stats{display:flex;flex-direction:column;gap:8px;min-width:140px}
+.stat-item{}
+.stat-value{font-size:16px;font-weight:700;font-family:'Syncopate',sans-serif;letter-spacing:0.04em}
+.stat-label{font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;margin-top:1px}
+
+.detail-bikes{display:flex;flex-direction:column;gap:5px;min-width:120px;max-height:130px;overflow-y:auto}
+.compat-label{font-size:8px;color:rgba(255,255,255,0.25);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:3px}
+.compat-bike{
+  font-size:9px;padding:2px 8px;border-radius:6px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);
+  color:rgba(255,255,255,0.5);
+}
+
+/* ── BIKES STRIP ── */
+.bikes-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:8px;padding-top:10px;
+  border-top:1px solid rgba(255,255,255,0.05);
+  margin-top:8px;
+}
+.bike-thumb{
+  display:flex;flex-direction:column;align-items:center;
+  gap:5px;padding:8px 6px;
+  border-radius:8px;border:1px solid rgba(255,255,255,0.05);
+  background:rgba(255,255,255,0.015);
+  transition:border-color 0.25s,background 0.25s;
+  cursor:default;
+}
+.bike-thumb.highlight{
+  border-color:rgba(249,115,22,0.35)!important;
+  background:rgba(249,115,22,0.04)!important;
+}
+.bike-thumb img{
+  width:100%;max-height:42px;
+  object-fit:contain;
+  filter:brightness(0.85);
+  transition:filter 0.25s;
+}
+.bike-thumb.highlight img{filter:brightness(1.1)}
+.bike-name{font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:0.06em;text-align:center}
+.bike-thumb.highlight .bike-name{color:rgba(249,115,22,0.7)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="eyebrow">Royal Enfield · Navigation</div>
+      <h1>RE Future <span>Roadmap</span></h1>
+    </div>
+    <div class="header-badge"><span></span> Live at Motoverse 2026</div>
+  </div>
+
+  <!-- TIMELINE AREA -->
+  <div class="timeline-area">
+
+    <!-- WINGMAN LANE (above spine) -->
+    <div class="lane lane-top" style="margin-bottom:2px">
+      <div class="lane-label">Wingman</div>
+      <div class="lane-track">
+        <div class="lane-line" style="right:40%"></div>
+        <div class="lane-line-future" style="left:60%;right:0"></div>
+
+        <!-- Wingman 1.0 — CURRENT (Nov 2025) -->
+        <div class="node current above" style="left:33%" onclick="select('w1')">
+          <div class="node-dot"></div>
+          <div class="now-badge orange">NOW</div>
+          <div class="node-label">Wingman 1.0</div>
+        </div>
+
+        <!-- Wingman 2.0 — LAUNCHED with Flying Flea 2026 -->
+        <div class="node current above" style="left:50%" onclick="select('w2')">
+          <div class="node-dot"></div>
+          <div class="now-badge green">NEW</div>
+          <div class="node-label">Wingman 2.0</div>
+        </div>
+
+        <!-- Wingman 3.0 — FUTURE -->
+        <div class="node future above" style="left:78%" onclick="select('w3')">
+          <div class="node-dot"></div>
+          <div class="future-badge">Future</div>
+          <div class="node-label">Wingman 3.0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPINE / YEAR AXIS -->
+    <div class="spine">
+      <div class="spine-label">Timeline</div>
+      <div class="spine-track">
+        <div class="spine-line"></div>
+        <div class="spine-arrow"></div>
+        <div class="year-marker" style="left:3%"><div class="year-tick"></div><div class="year-text">2021</div></div>
+        <div class="year-marker" style="left:24%"><div class="year-tick"></div><div class="year-text">2023</div></div>
+        <div class="year-marker year-now" style="left:50%"><div class="year-tick"></div><div class="year-text">2026</div></div>
+        <div class="year-marker" style="left:82%"><div class="year-tick"></div><div class="year-text">2027+</div></div>
+      </div>
+    </div>
+
+    <!-- TRIPPER LANE (below spine) -->
+    <div class="lane lane-bottom" style="margin-top:2px">
+      <div class="lane-label">Tripper</div>
+      <div class="lane-track">
+        <div class="lane-line" style="right:44%"></div>
+        <div class="lane-line-future" style="left:56%;right:0"></div>
+
+        <!-- Tripper pod — 2021 -->
+        <div class="node tripper-node legacy" style="left:3%" onclick="select('tp')">
+          <div class="node-dot"></div>
+          <div class="node-label">Tripper pod</div>
+        </div>
+
+        <!-- Tripper Dash — CURRENT 2023 -->
+        <div class="node tripper-node current" style="left:24%" onclick="select('td')">
+          <div class="node-dot"></div>
+          <div class="now-badge cyan">NOW</div>
+          <div class="node-label">Tripper Dash</div>
+        </div>
+
+        <!-- Android OS · FleaOS — LAUNCHED 2026 -->
+        <div class="node tripper-node current" style="left:50%" onclick="select('fleaos')">
+          <div class="node-dot"></div>
+          <div class="now-badge green">NEW</div>
+          <div class="node-label">Android OS · FleaOS</div>
+        </div>
+
+        <!-- Tripper Duo — FUTURE Late 2026 (Interceptor / Continental GT) -->
+        <div class="node tripper-node future" style="left:65%" onclick="select('tdu')">
+          <div class="node-dot"></div>
+          <div class="future-badge">Future</div>
+          <div class="node-label">Tripper Duo</div>
+        </div>
+
+        <!-- Tripper Touch · PaaD — FUTURE -->
+        <div class="node tripper-node future" style="left:82%" onclick="select('paad')">
+          <div class="node-dot"></div>
+          <div class="future-badge">Future</div>
+          <div class="node-label">Tripper Touch · PaaD</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /timeline-area -->
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-panel" id="detail-panel">
+    <div class="detail-empty" id="detail-empty">← Tap any product on the timeline to explore</div>
+    <div class="detail-content" id="detail-content"></div>
+  </div>
+
+  <!-- BIKES STRIP -->
+  <div class="bikes-strip">
+    <div class="bike-thumb" id="bike-flea">
+      <img src="/bike-assets/flyingflea.jpg" alt="Flying Flea"/>
+      <div class="bike-name">Flying Flea C6</div>
+    </div>
+    <div class="bike-thumb" id="bike-himalayan-e">
+      <img src="/bike-assets/himalayan-electric.avif" alt="Himalayan Electric"/>
+      <div class="bike-name">Himalayan Electric</div>
+    </div>
+    <div class="bike-thumb" id="bike-himalayan">
+      <img src="/bike-assets/himalayan.png" alt="Himalayan"/>
+      <div class="bike-name">Himalayan 450</div>
+    </div>
+    <div class="bike-thumb" id="bike-meteor">
+      <img src="/bike-assets/Super-Meteor-650.jpg" alt="Super Meteor"/>
+      <div class="bike-name">Super Meteor 650</div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+const data = {
+  w1: {
+    name: 'Wingman 1.0', year: '2025 · CURRENT', color: '#f97316',
+    desc: 'The first connected navigation experience for RE riders. Introduced turn-by-turn guidance and basic route sync via the Tripper pod.',
+    features: ['Turn-by-turn arrows','Bluetooth app sync','Basic route guidance','Handlebar integration'],
+    bikes: ['bike-meteor','bike-himalayan'],
+    compatText: ['Super Meteor 650','Himalayan 450'],
+    stats: null
+  },
+  w2: {
+    name: 'Wingman 2.0', year: '2026 · LAUNCHED', color: '#f97316',
+    desc: 'Expanded the connected ecosystem with live tracking, group rides, and OBD telemetry — making the RE App a true ride companion.',
+    features: ['Live location sharing','Group ride mode','OBD telemetry','Route recording','Emergency SOS'],
+    bikes: ['bike-flea'],
+    compatText: ['Flying Flea C6 · S6'],
+    stats: null
+  },
+  w3: {
+    name: 'Wingman 3.0', year: '2027+ · FUTURE', color: '#f97316',
+    desc: 'The flagship experience — AI-powered ride intelligence, real-time cluster sync, and the full connected ecosystem across all current models.',
+    features: ['AI ride scoring','Cluster live sync','Real-time alerts','Community rides','Advanced telemetry','FleaOS ready'],
+    bikes: ['bike-flea','bike-himalayan-e','bike-himalayan','bike-meteor'],
+    compatText: ['Next-gen platform · All upcoming models'],
+    stats: null
+  },
+  tp: {
+    name: 'Tripper pod', year: '2021', color: '#22d3ee',
+    desc: 'The original Tripper. A compact round pod showing simple turn-by-turn directions from the RE App, bolted to the handlebar.',
+    features: ['Round compact form','Turn-by-turn arrows','App-paired','Handlebar mount','Waterproof'],
+    bikes: ['bike-himalayan','bike-meteor'],
+    compatText: [
+      'Meteor 350 · Super Meteor 650',
+      'Classic 350 · Bullet 350 · Classic 650',
+      'Goan Classic 350 · Bullet 650',
+      'Hunter 350 · Scram 411 · Scram 440',
+      'Guerrilla 450 · Shotgun 650',
+      'Interceptor 650 · Continental GT 650 · Bear 650',
+      'Himalayan 411'
+    ],
+    stats: null
+  },
+  td: {
+    name: 'Tripper Dash', year: '2023 · CURRENT', color: '#22d3ee',
+    desc: 'The round GPS dash showing a live map, speed, and distance. Improved battery (7h+) and lock screen update — loved by the community.',
+    features: ['Full map display','Speed + distance','Improved battery (7h+)','Lock screen update','Music playback'],
+    bikes: ['bike-himalayan'],
+    compatText: ['Himalayan 450','Guerrilla 450','Bear 650'],
+    stats: [
+      { value: '912,820', label: 'Total Trips' },
+      { value: '45,929', label: 'Unique Users' },
+      { value: '17.8M km', label: 'Distance Logged' },
+    ]
+  },
+  tdu: {
+    name: 'Tripper Duo', year: 'Late 2026 · FUTURE', color: '#a78bfa',
+    desc: 'Dual-gauge cluster that merges analog tradition with digital navigation. Speedometer on the left, live nav arrow on the right — bringing connected guidance to the iconic 650 Twins.',
+    features: ['Dual analog gauges','Nav + Telemetry','Integrated cluster','Speedometer + RPM','Cluster illumination'],
+    bikes: [],
+    compatText: ['Interceptor 650', 'Continental GT 650'],
+    stats: null
+  },
+  fleaos: {
+    name: 'Android OS · FleaOS', year: '2026 · LAUNCHED', color: '#34d399',
+    desc: 'The Flying Flea C6 runs a purpose-built Android layer — FleaOS. Navigation, telemetry, and connectivity baked into the OS, not bolted on.',
+    features: ['Android-native OS','FleaOS custom layer','Built-in navigation','OTA updates','Full app ecosystem','RE-native telemetry'],
+    bikes: ['bike-flea'],
+    compatText: ['Flying Flea C6','Flying Flea S6'],
+    stats: null
+  },
+  paad: {
+    name: 'Tripper Touch · PaaD', year: '2026+ · FUTURE', color: '#34d399',
+    desc: 'Next-gen navigation hardware — a touchscreen Tripper cluster, or your smartphone acting as the dash. Zero hardware barrier, maximum flexibility.',
+    features: ['Touch display','Phone as a Dash (PaaD)','Wireless sync','High-res map','Haptic feedback','L1A & K1G platform'],
+    bikes: ['bike-himalayan-e'],
+    compatText: ['Himalayan Electric'],
+    stats: null
+  }
+};
+
+const allBikeIds = ['bike-flea','bike-himalayan-e','bike-himalayan','bike-meteor'];
+let currentSelected = null;
+
+function select(id) {
+  if (currentSelected === id) {
+    // deselect
+    currentSelected = null;
+    document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+    document.getElementById('detail-empty').style.display = 'flex';
+    document.getElementById('detail-content').classList.remove('active');
+    allBikeIds.forEach(b => document.getElementById(b)?.classList.remove('highlight'));
+    return;
+  }
+
+  currentSelected = id;
+  const p = data[id];
+  if (!p) return;
+
+  // Update selected node
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+  const nodes = document.querySelectorAll('.node');
+  nodes.forEach(n => {
+    if (n.getAttribute('onclick') === `select('${id}')`) n.classList.add('selected');
+  });
+
+  // Bike highlights
+  allBikeIds.forEach(b => {
+    const el = document.getElementById(b);
+    if (!el) return;
+    if (p.bikes.includes(b)) el.classList.add('highlight');
+    else el.classList.remove('highlight');
+  });
+
+  // Build detail content
+  const statsHTML = p.stats ? `
+    <div class="detail-stats">
+      ${p.stats.map(s => `
+        <div class="stat-item">
+          <div class="stat-value" style="color:${p.color}">${s.value}</div>
+          <div class="stat-label">${s.label}</div>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+
+  const compatBikes = p.compatText || allBikeIds
+    .filter(b => p.bikes.includes(b))
+    .map(b => ({
+      'bike-flea': 'Flying Flea C6',
+      'bike-himalayan-e': 'Himalayan Electric',
+      'bike-himalayan': 'Himalayan 450',
+      'bike-meteor': 'Super Meteor 650'
+    }[b]));
+
+  document.getElementById('detail-content').innerHTML = `
+    <div class="detail-left">
+      <div class="detail-year">${p.year}</div>
+      <div class="detail-name" style="color:${p.color}">${p.name}</div>
+      <div class="detail-desc">${p.desc}</div>
+      <div class="detail-features">
+        ${p.features.map(f => `<div class="feature-tag">${f}</div>`).join('')}
+      </div>
+    </div>
+    ${statsHTML}
+    <div class="detail-bikes">
+      <div class="compat-label">Compatible Bikes</div>
+      ${compatBikes.map(b => `<div class="compat-bike">🏍️ ${b}</div>`).join('')}
+    </div>
+  `;
+
+  document.getElementById('detail-empty').style.display = 'none';
+  document.getElementById('detail-content').classList.add('active');
+}
+
+// Auto-select Wingman 1.0 on load after a short delay
+setTimeout(() => select('w1'), 800);
+</script>
+</body>
+</html>

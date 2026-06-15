@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" style="height:100%;overflow:hidden;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE Motoverse - Future Roadmap Navigator</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syncopate:wght@400;700&display=swap');
+        
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #040711;
+        }
+        
+        .syncopate {
+            font-family: 'Syncopate', sans-serif;
+        }
+
+        /* */
+        /* Tech grid overlay background */
+        .scanlines {
+            background: linear-gradient(
+                rgba(18, 24, 38, 0) 50%, 
+                rgba(0, 0, 0, 0.45) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(249, 115, 22, 0.02) 0%,
+                rgba(0, 0, 0, 0) 10%
+            );
+            background-size: 100% 4px, 12px 100%;
+        }
+
+        /* Glassmorphism panel styling */
+        .glass-panel {
+            background: rgba(8, 12, 24, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* Glowing rings for roadmap milestones */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.7); opacity: 0.9; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+
+        .glowing-pulse::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            border: 1px solid #f97316;
+            border-radius: 50%;
+            animation: pulse-ring 2.5s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+        }
+
+        /* Hide default scrollbars for modern look */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050814;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f97316;
+        }
+    </style>
+</head>
+<body class="text-slate-100 flex flex-col relative scanlines" style="height:100%;">
+
+    <!-- HEADER BRANDING BAR -->
+    <header class="border-b border-slate-800 bg-slate-950/95 backdrop-blur-md px-6 py-4 z-20 flex flex-wrap justify-between items-center gap-4 relative">
+        <div class="flex items-center gap-4">
+            <div class="p-2.5 bg-orange-500/10 border border-orange-500/30 rounded-xl relative overflow-hidden">
+                <i data-lucide="milestone" class="w-6 h-6 text-orange-500 animate-pulse"></i>
+            </div>
+            <div>
+                <h1 class="text-lg md:text-xl font-bold tracking-widest text-slate-100 uppercase syncopate">
+                    RE <span class="text-orange-500">MOTOVERSE</span> // VISION ROADMAP
+                </h1>
+                <p class="text-[10px] text-slate-400 tracking-wider font-mono uppercase">Strategic Year-on-Year Timeline Navigator & Interactive Planner Template</p>
+            </div>
+        </div>
+
+        <!-- Navigation Controls and Audio Toggle -->
+        <div class="flex flex-wrap items-center gap-3">
+            <button id="sfxToggle" onclick="toggleAudio()" class="px-3.5 py-1.5 border border-slate-800 bg-slate-900/60 rounded-xl hover:border-orange-500/40 hover:text-orange-400 transition-all duration-200 flex items-center gap-2 text-xs font-mono">
+                <i data-lucide="volume-2" id="sfxIcon" class="w-3.5 h-3.5 text-orange-500"></i>
+                <span id="sfxLabel">AUDIO: ACTIVE</span>
+            </button>
+            <div class="text-xs bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-3 py-1.5 rounded-xl font-mono flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 bg-cyan-400 rounded-full animate-ping"></span>
+                <span>DRAFT CREATOR READY</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN INTERACTIVE HUB -->
+    <main class="flex flex-row relative" style="flex:1 1 0%;min-height:0;overflow:hidden;">
+        
+        <!-- LEFT CONTROL PANEL: ROADMAP EDITOR -->
+        <aside id="sidebarPanel" class="w-[420px] border-r border-slate-800/80 bg-slate-950/90 backdrop-blur-md flex flex-col p-5 z-10 shrink-0 gap-4 overflow-y-auto transition-all duration-500" style="max-height:100%;">
+            
+            <!-- Quick Action Preset Buttons -->
+            <div class="bg-slate-900/40 border border-slate-800 p-3 rounded-xl space-y-2">
+                <span class="text-[10px] font-mono text-slate-400 uppercase block tracking-wider">Template Quick Presets</span>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="loadSampleTemplate()" class="py-2 px-3 bg-orange-500/10 border border-orange-500/30 text-orange-400 rounded-lg text-xs font-mono font-bold hover:bg-orange-500/20 transition-all flex items-center justify-center gap-1.5">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                        Load Sample RE Plan
+                    </button>
+                    <button onclick="clearToEmptyTemplate()" class="py-2 px-3 bg-slate-800/80 border border-slate-700 text-slate-300 rounded-lg text-xs font-mono font-bold hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400 transition-all flex items-center justify-center gap-1.5">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        Clear to Empty
+                    </button>
+                </div>
+            </div>
+
+            <!-- Milestone Details Form (Updates dynamic nodes) -->
+            <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl p-4 space-y-3 relative">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <span class="text-xs font-mono text-orange-400 uppercase tracking-widest">Active Node Configurator</span>
+                    <span id="selectedNodeIndexLabel" class="text-[10px] font-mono px-2 py-0.5 bg-slate-850 text-slate-400 border border-slate-800 rounded">No Node Selected</span>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[11px] font-mono text-slate-400 block">Milestone Target Year</label>
+                    <input type="text" id="nodeYear" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 font-mono focus:outline-none focus:border-orange-500" placeholder="e.g. 2027 / Q1 2028" oninput="updateSelectedNodeFromForm()">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[11px] font-mono text-slate-400 block">Core Vision Title / Phase</label>
+                    <input type="text" id="nodeTitle" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 font-mono focus:outline-none focus:border-orange-500" placeholder="e.g. Next-Gen Connected Telematics" oninput="updateSelectedNodeFromForm()">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[11px] font-mono text-slate-400 block mb-1">Visual Status Accent</label>
+                        <select id="nodeStatus" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 font-mono focus:outline-none focus:border-orange-500" onchange="updateSelectedNodeFromForm()">
+                            <option value="Completed">Completed (Green)</option>
+                            <option value="Active">Active Focus (Orange)</option>
+                            <option value="Future">Future Concept (Cyan)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-mono text-slate-400 block mb-1">Theme Accent</label>
+                        <select id="nodeColor" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 font-mono focus:outline-none focus:border-orange-500" onchange="updateSelectedNodeFromForm()">
+                            <option value="#f97316">Orange Spark</option>
+                            <option value="#22d3ee">Cyan Horizon</option>
+                            <option value="#a855f7">Purple Portal</option>
+                            <option value="#eab308">Gold Spark</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[11px] font-mono text-slate-400 block">Strategic Bullet Objectives</label>
+                        <span class="text-[9px] text-slate-500 font-mono">One point per line</span>
+                    </div>
+                    <textarea id="nodeDescription" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 font-mono focus:outline-none focus:border-orange-500" placeholder="• Custom telemetry dashboard release&#10;• Global map projection updates&#10;• Sound synthesis architecture integration" oninput="updateSelectedNodeFromForm()"></textarea>
+                </div>
+
+                <!-- Delete node helper button -->
+                <button id="btnDeleteNode" onclick="deleteActiveNode()" class="w-full py-1.5 text-xs font-mono font-bold bg-red-950/20 hover:bg-red-900/30 text-red-400 border border-red-900/30 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    Remove selected milestone node
+                </button>
+            </div>
+
+            <!-- Global Map Spline Options -->
+            <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl p-4 space-y-3">
+                <span class="text-xs font-mono text-cyan-400 uppercase tracking-widest block">Strategic Highway Modifiers</span>
+                
+                <div class="space-y-2 text-xs font-mono">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Road Path Curviness:</span>
+                        <span id="labelCurve" class="text-cyan-400 font-bold">Medium Spline</span>
+                    </div>
+                    <input type="range" id="roadCurveRange" min="50" max="300" value="150" class="w-full accent-cyan-500" oninput="onCurveSliderChange()">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-center text-xs font-mono">
+                    <button onclick="addMilestoneNode()" class="p-2.5 bg-cyan-950/30 hover:bg-cyan-950/60 text-cyan-400 border border-cyan-500/30 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        Add Milestone
+                    </button>
+                    <button onclick="startRoadSimulation()" class="p-2.5 bg-emerald-950/30 hover:bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5">
+                        <i data-lucide="play" class="w-4 h-4"></i>
+                        Simulate Ride
+                    </button>
+                </div>
+            </div>
+
+            <!-- RAW EXPORT CONFIG BLOCK (Editable copy & paste) -->
+            <div class="bg-slate-950 border border-slate-800/80 rounded-xl p-3 flex flex-col gap-2 relative overflow-hidden flex-grow min-h-[140px]">
+                <div class="flex items-center justify-between text-[10px] font-mono text-slate-400 border-b border-slate-900 pb-2">
+                    <span>LIVE TEMPLATE STATE (JSON)</span>
+                    <button onclick="copyToClipboardJSON()" class="text-xs text-orange-400 font-bold hover:text-white transition-all flex items-center gap-1">
+                        <i data-lucide="copy" class="w-3 h-3"></i>
+                        COPY CONFIG
+                    </button>
+                </div>
+                <textarea id="jsonConfigBox" class="w-full flex-grow bg-slate-900/60 rounded-lg p-2 text-[10px] text-slate-300 font-mono focus:outline-none border border-slate-800/40 resize-none h-24" onchange="importJSONFromBox()"></textarea>
+                <div class="text-[9px] font-mono text-slate-500">
+                    *Tip: Copy/paste this JSON configuration to restore this customized roadmap layout anytime.
+                </div>
+            </div>
+        </aside>
+
+        <!-- RIGHT AREA: MAIN INTERACTIVE ROADMAP CANVAS -->
+        <section class="flex flex-col relative bg-slate-950 p-4 overflow-hidden" style="flex:1 1 0%;min-height:0;">
+            
+            <!-- Compact hint strip — top-right, non-intrusive -->
+            <div class="absolute top-4 right-4 z-10 glass-panel px-3 py-1.5 rounded-xl border border-slate-800 flex items-center gap-3 text-[10px] font-mono">
+                <span class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                <span class="text-slate-400">Click node to edit · Drag to reposition · Dbl-click to add</span>
+            </div>
+            <span id="diagResolution" class="hidden"></span>
+
+            <!-- High Visuals Interactive Map Area -->
+            <div class="flex-grow relative rounded-2xl border border-slate-800 bg-[#05070e] overflow-hidden group">
+                <!-- Custom status feed overlay -->
+                <div class="absolute bottom-4 right-4 z-10 font-mono text-[10px] text-slate-400 glass-panel px-3 py-1.5 rounded-lg border border-slate-800/80">
+                    <span id="canvasInteractionFeed">System Active: Select or Move any node to begin planning.</span>
+                </div>
+
+                <!-- Simulation Speed HUD Dial overlay (Visible when motorcycle runs) -->
+                <div id="simSpeedometer" class="absolute top-8 right-8 z-10 glass-panel p-3 rounded-xl border border-cyan-500/20 hidden flex-col items-center gap-1 w-28 font-mono">
+                    <span class="text-[9px] text-slate-400 uppercase">ENGINE POWER</span>
+                    <span id="simSpeedVal" class="text-lg font-bold text-cyan-400">0 RPM</span>
+                    <span class="text-[9px] text-slate-500">MOTOVERSE DRIVE</span>
+                </div>
+
+                <!-- Exit fullscreen button — only visible during simulation -->
+                <button id="exitFullscreenBtn" onclick="exitFullscreen()" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 hidden items-center gap-2 px-5 py-2 bg-slate-900/90 border border-orange-500/50 text-orange-400 text-xs font-mono font-bold rounded-full hover:bg-orange-500/10 transition-all">
+                    <i data-lucide="minimize-2" class="w-3.5 h-3.5"></i>
+                    EXIT FULLSCREEN
+                </button>
+
+                <!-- Canvas Component -->
+                <canvas id="roadmapCanvas" class="block w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+            </div>
+
+            <!-- Dynamic Bottom Action Control Console -->
+            <div class="mt-4 glass-panel border border-slate-800 rounded-xl p-3 flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-mono">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span class="text-slate-400">PLANNER OUTPUT FEED:</span>
+                    <span id="consoleFeed" class="text-slate-200">Interactive roadmap template loaded. Map your upcoming release strategies!</span>
+                </div>
+                <div class="flex gap-2">
+                    <button class="px-3.5 py-1.5 bg-slate-900 border border-slate-800 rounded-lg hover:border-orange-500/30 hover:text-orange-400 transition-all text-[11px]" onclick="loadSampleTemplate()">
+                        Load RE Sample
+                    </button>
+                    <button class="px-3.5 py-1.5 bg-slate-900 border border-slate-800 rounded-lg hover:border-cyan-500/30 hover:text-cyan-400 transition-all text-[11px]" onclick="downloadConfigJSON()">
+                        Export Template
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Interactive Toast Message Box (No alerts) -->
+    <div id="toastNotification" class="fixed bottom-6 left-6 glass-panel border border-orange-500/40 p-4 rounded-xl shadow-xl shadow-orange-950/20 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none max-w-sm">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-orange-500/10 rounded-lg text-orange-400">
+                <i data-lucide="info" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h4 class="font-mono text-xs font-bold text-slate-200">ROADMAP WORKSPACE UPDATED</h4>
+                <p id="toastMessage" class="text-[11px] text-slate-400 font-mono">Template file updated successfully.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Web Audio Synthesizer Script -->
+    <script>
+        let audioCtx = null;
+        let sfxEnabled = true;
+
+        function toggleAudio() {
+            sfxEnabled = !sfxEnabled;
+            const btn = document.getElementById("sfxToggle");
+            const icon = document.getElementById("sfxIcon");
+            const label = document.getElementById("sfxLabel");
+
+            if (sfxEnabled) {
+                btn.className = "px-3.5 py-1.5 border border-slate-800 bg-slate-900/60 rounded-xl hover:border-orange-500/40 hover:text-orange-400 transition-all duration-200 flex items-center gap-2 text-xs font-mono";
+                label.innerText = "AUDIO: ACTIVE";
+                icon.setAttribute("data-lucide", "volume-2");
+                playTone(440, 'sine', 0.1);
+            } else {
+                btn.className = "px-3.5 py-1.5 border border-slate-800 bg-slate-900/10 rounded-xl text-slate-500 transition-all duration-200 flex items-center gap-2 text-xs font-mono";
+                label.innerText = "AUDIO: MUTED";
+                icon.setAttribute("data-lucide", "volume-x");
+            }
+            lucide.createIcons();
+        }
+
+        function playTone(freq, type, duration) {
+            if (!sfxEnabled) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = type || 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                
+                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {
+                console.log("Audio not supported or interaction deferred");
+            }
+        }
+
+        // Simulates custom rising rev engine sound
+        function playMotorcycleRevTone(speedPct) {
+            if (!sfxEnabled) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                const osc = audioCtx.createOscillator();
+                const oscSecondary = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sawtooth';
+                // Map speed percent (0 to 1) to low engine rumble frequencies
+                const frequency = 70 + (speedPct * 110);
+                osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+
+                // Add slight sub-frequency for engine weight
+                oscSecondary.type = 'triangle';
+                oscSecondary.frequency.setValueAtTime(frequency * 0.5, audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.15);
+
+                osc.connect(gain);
+                oscSecondary.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                oscSecondary.start();
+                osc.stop(audioCtx.currentTime + 0.15);
+                oscSecondary.stop(audioCtx.currentTime + 0.15);
+            } catch (e) {}
+        }
+
+        function triggerSuccessBeep() {
+            playTone(523, 'sine', 0.15);
+            setTimeout(() => playTone(659, 'sine', 0.15), 100);
+            setTimeout(() => playTone(783, 'sine', 0.3), 200);
+        }
+
+        function triggerAddBeep() {
+            playTone(880, 'triangle', 0.1);
+        }
+    </script>
+
+    <!-- Primary Interactive Canvas & State Code -->
+    <script>
+        let canvas, ctx;
+        let activeNodeIndex = 0; // Currently focused node index in sidebar
+        let isDraggingNode = false;
+        let dragOffset = { x: 0, y: 0 };
+        let hoveredNodeIndex = null;
+        let roadCurvinessValue = 150; // Spline curve offset parameter
+
+        // Simulation parameters
+        let isSimulatingDrive = false;
+        let driveSegmentIndex = 0;
+        let driveProgress = 0.0;
+        let driveMotorcyclePos = { x: 0, y: 0 };
+        let simulationInterval = null;
+
+        // Design-space canvas the node positions were authored for
+        const DESIGN_W = 900, DESIGN_H = 600;
+        let canvasInitialized = false;
+
+        // Custom Initial Template Data: Winding sequential roadmap positions
+        // This is pre-loaded to represent a majestic Royal Enfield Strategy Plan
+        let milestoneNodes = [
+            {
+                year: "2026",
+                title: "RE Wingman 3.0 Platform Integration",
+                description: "• Deep GPS integration via high-frequency telemetry chips.\n• Live tire pressure reporting directly in the Wingman mobile app.\n• Immediate event geofence alerting system launch.",
+                status: "Completed",
+                color: "#22d3ee",
+                x: 120, y: 540   // bottom-left: start of the road
+            },
+            {
+                year: "2027",
+                title: "AI Adaptive Rider Assistant",
+                description: "• Machine learning analysis of engine acoustics to predict maintenance.\n• Voice-controlled head-up displays (HUD) inside smart touring helmets.\n• Proactive hazard warnings mapped dynamically via fellow rider routes.",
+                status: "Active",
+                color: "#f97316",
+                x: 680, y: 440   // right side, going up
+            },
+            {
+                year: "2028",
+                title: "Decarbonized Sustainable Motoring",
+                description: "• Sustainable biofuels validation program across multi-terrain platforms.\n• Eco-route optimizations built into Royal Enfield Maps for mileage mapping.\n• Green emission tracker badges unlocked on the community hub.",
+                status: "Future",
+                color: "#eab308",
+                x: 180, y: 310   // back left, mid-height
+            },
+            {
+                year: "2029",
+                title: "Next-Gen EV Cruiser Ecosystem",
+                description: "• Battery health predictive diagnostics & ultra-fast charge networks map.\n• Custom motor-torque tuning profiles based on rider history.\n• Sound-profile synthesis generator: choose your digital exhaust tune.",
+                status: "Future",
+                color: "#a855f7",
+                x: 760, y: 180   // far right, upper
+            },
+            {
+                year: "2030",
+                title: "Royal Enfield Galactic Hub",
+                description: "• Pure concept: Augmented reality HUD navigation through physical events.\n• Ultimate community connection: real-time telemetry sharing for global tours.\n• AI-generated ride documentaries recorded in beautiful high fidelity.",
+                status: "Future",
+                color: "#22d3ee",
+                x: 450, y: 60    // center top: destination
+            }
+        ];
+
+        window.onload = function() {
+            lucide.createIcons();
+            canvas = document.getElementById("roadmapCanvas");
+            ctx = canvas.getContext("2d");
+
+            window.addEventListener("resize", resizeCanvas);
+            resizeCanvas();
+            requestAnimationFrame(() => { resizeCanvas(); });
+
+            // Set up UI Event listeners for interactions on Canvas
+            canvas.addEventListener("mousedown", handleMouseDown);
+            canvas.addEventListener("mousemove", handleMouseMove);
+            canvas.addEventListener("mouseup", handleMouseUp);
+            canvas.addEventListener("dblclick", handleDoubleClick);
+
+            // Populate form with first node
+            populateFormFromActiveNode();
+            updateLiveJSONOutput();
+
+            // Fire drawing loop
+            requestAnimationFrame(drawRoadmap);
+        };
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const newW = container.clientWidth  || window.innerWidth;
+            const newH = container.clientHeight || window.innerHeight;
+            if (newW < 10 || newH < 10) return;
+
+            // On first valid render, scale hardcoded design-space positions to actual canvas
+            if (!canvasInitialized) {
+                const sx = newW / DESIGN_W;
+                const sy = newH / DESIGN_H;
+                milestoneNodes.forEach(n => { n.x = n.x * sx; n.y = n.y * sy; });
+                // Scale curviness proportionally so road doesn't loop back on small canvas
+                roadCurvinessValue = Math.round(150 * (newH / DESIGN_H));
+                document.getElementById("roadCurveRange").value = roadCurvinessValue;
+                canvasInitialized = true;
+            }
+
+            canvas.width  = newW;
+            canvas.height = newH;
+
+            milestoneNodes.forEach(n => {
+                if (n.x > canvas.width  - 20) n.x = canvas.width  - 60;
+                if (n.y > canvas.height - 20) n.y = canvas.height - 60;
+                if (n.x < 20) n.x = 20;
+                if (n.y < 20) n.y = 20;
+            });
+
+            drawRoadmap();
+        }
+
+        // Custom Bezier / Hermite Hermitage Spline generator to draw the highway connecting nodes sequentially
+        function drawRoadmap() {
+            if (!ctx) return;
+
+            // Clear Screen to gorgeous cyber black-blue
+            ctx.fillStyle = "#05070e";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Background Radar Grids
+            ctx.strokeStyle = "rgba(249, 115, 22, 0.03)";
+            ctx.lineWidth = 1;
+            for (let i = 50; i < canvas.width; i += 50) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            for (let j = 50; j < canvas.height; j += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, j);
+                ctx.lineTo(canvas.width, j);
+                ctx.stroke();
+            }
+
+            // Draw grid accent border circles representing cosmic target radars
+            ctx.strokeStyle = "rgba(6, 182, 212, 0.02)";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 220, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 440, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Draw the Winding Highway Spline Road if there are 2 or more nodes
+            if (milestoneNodes.length >= 2) {
+                // 1. Draw Asphalt/Concrete roadway background base
+                ctx.strokeStyle = "rgba(30, 41, 59, 0.7)";
+                ctx.lineWidth = 26;
+                ctx.lineCap = "round";
+                ctx.lineJoin = "round";
+                drawSplinePath();
+
+                // 2. Draw glowing side-stripes (Left Neon Border)
+                ctx.strokeStyle = "rgba(6, 182, 212, 0.25)";
+                ctx.lineWidth = 14;
+                drawSplinePath();
+
+                // 3. Draw high-tech middle divider (Dashed Orange Line)
+                ctx.strokeStyle = "#f97316";
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([12, 18]); // Beautiful dashed roadway lane
+                drawSplinePath();
+                ctx.setLineDash([]); // Reset
+            }
+
+            // Draw connections from Nodes to Floating Text Cards
+            // This displays high clarity visual descriptions for empty templates!
+            milestoneNodes.forEach((node, idx) => {
+                const isActive = activeNodeIndex === idx;
+                const isHovered = hoveredNodeIndex === idx;
+
+                // Only draw info card for active/hovered node to avoid overlap
+                if (isActive || isHovered) drawInfoCard(node, idx, isActive, isHovered);
+
+                // Draw Milestone Beacons (Circles & pulsings)
+                ctx.shadowColor = node.color;
+                ctx.shadowBlur = (isHovered || isActive) ? 18 : 6;
+                
+                // Draw glow pulse outer ring
+                ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+                ctx.strokeStyle = node.color;
+                ctx.lineWidth = (isHovered || isActive) ? 4.5 : 2.5;
+
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, (isHovered || isActive) ? 22 : 16, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.shadowBlur = 0; // Reset shadow
+
+                // Pulse core indicator
+                ctx.fillStyle = node.color;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, (isHovered || isActive) ? 8 : 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Year label below node
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 11px monospace";
+                ctx.textAlign = "center";
+                ctx.fillText(node.year, node.x, node.y + 30);
+
+                // Short title below year (only when not hovered — card shows full info on hover)
+                if (!isActive && !isHovered) {
+                    const shortTitle = node.title.length > 16 ? node.title.substring(0, 14) + "…" : node.title;
+                    ctx.fillStyle = "rgba(148,163,184,0.75)";
+                    ctx.font = "8.5px 'Space Grotesk', sans-serif";
+                    ctx.fillText(shortTitle, node.x, node.y + 42);
+                }
+            });
+
+            // Draw the Simulated Motorcycle running along the spline
+            if (isSimulatingDrive) {
+                ctx.shadowColor = "#f97316";
+                ctx.shadowBlur = 15;
+                ctx.fillStyle = "#f97316";
+                ctx.beginPath();
+                ctx.arc(driveMotorcyclePos.x, driveMotorcyclePos.y, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                // Glowing outer halo
+                ctx.strokeStyle = "rgba(249, 115, 22, 0.4)";
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(driveMotorcyclePos.x, driveMotorcyclePos.y, 18, 0, Math.PI*2);
+                ctx.stroke();
+
+                // Dynamic direction arrow indicator
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.arc(driveMotorcyclePos.x, driveMotorcyclePos.y, 3, 0, Math.PI*2);
+                ctx.fill();
+            }
+
+            // Continuously request new frame for flow effects
+            requestAnimationFrame(drawRoadmap);
+        }
+
+        function drawSplinePath() {
+            ctx.beginPath();
+            ctx.moveTo(milestoneNodes[0].x, milestoneNodes[0].y);
+
+            for (let i = 0; i < milestoneNodes.length - 1; i++) {
+                const p0 = milestoneNodes[i];
+                const p1 = milestoneNodes[i+1];
+
+                // Calculate custom anchor pull points dynamically
+                const cpX1 = p0.x;
+                const cpY1 = p0.y - roadCurvinessValue;
+                const cpX2 = p1.x;
+                const cpY2 = p1.y + roadCurvinessValue;
+
+                ctx.bezierCurveTo(cpX1, cpY1, cpX2, cpY2, p1.x, p1.y);
+            }
+            ctx.stroke();
+        }
+
+        // Draw side floating boxes containing textual roadmap metrics (Supports Empty state excellently)
+        function drawInfoCard(node, idx, isActive, isHovered) {
+            // Determine side position to draw card cleanly based on coordinate space
+            const cardOnLeft = node.x > canvas.width / 2;
+            const targetX = cardOnLeft ? (node.x - 170) : (node.x + 40);
+            const targetY = node.y - 50;
+
+            // Anchor line from node to placard card
+            ctx.strokeStyle = isHovered ? "rgba(249, 115, 22, 0.4)" : "rgba(255, 255, 255, 0.08)";
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(node.x, node.y);
+            ctx.lineTo(cardOnLeft ? node.x - 25 : node.x + 25, node.y - 12);
+            ctx.lineTo(targetX + (cardOnLeft ? 130 : 0), targetY + 25);
+            ctx.stroke();
+
+            // Placard background panel box
+            ctx.fillStyle = isActive ? "rgba(15, 23, 42, 0.95)" : "rgba(8, 12, 24, 0.8)";
+            ctx.strokeStyle = isActive ? node.color : "rgba(255, 255, 255, 0.1)";
+            ctx.lineWidth = isActive ? 1.5 : 1;
+            
+            // Draw rounded rect manually
+            const rectWidth = 135;
+            const rectHeight = 65;
+            ctx.beginPath();
+            ctx.roundRect(targetX, targetY, rectWidth, rectHeight, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            // Placard Content Header (Year + Phase)
+            ctx.fillStyle = node.color;
+            ctx.font = "bold 9px monospace";
+            ctx.textAlign = "left";
+            ctx.fillText(node.year + " • " + node.status.toUpperCase(), targetX + 8, targetY + 16);
+
+            // Phase core title
+            ctx.fillStyle = "#f1f5f9";
+            ctx.font = "bold 8.5px 'Space Grotesk', sans-serif";
+            
+            // Handle long titles cleanly on template cards
+            let titleText = node.title || "(Edit Me: Click Node)";
+            if (titleText.length > 20) {
+                titleText = titleText.substring(0, 18) + "...";
+            }
+            ctx.fillText(titleText, targetX + 8, targetY + 30);
+
+            // Bullet counts indicator (empty templates show customizable counts)
+            const bullets = node.description ? node.description.split('\n').filter(b => b.trim() !== '') : [];
+            ctx.fillStyle = "#64748b";
+            ctx.font = "8px monospace";
+            ctx.fillText(`${bullets.length} Objectives Set`, targetX + 8, targetY + 44);
+
+            // Active / Hovered marker glow
+            if (isActive) {
+                ctx.fillStyle = node.color;
+                ctx.beginPath();
+                ctx.arc(targetX + 125, targetY + 12, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function handleMouseDown(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+
+            // Stop simulation instantly if active
+            if (isSimulatingDrive) {
+                clearInterval(simulationInterval);
+                isSimulatingDrive = false;
+                document.getElementById("simSpeedometer").classList.add("hidden");
+                exitFullscreen();
+                showToast("Simulation Interrupted", "You manually clicked the canvas while simulation was running.");
+            }
+
+            // Find closest clicked node
+            let clickedIdx = null;
+            milestoneNodes.forEach((node, idx) => {
+                const dist = Math.sqrt((node.x - clickX) ** 2 + (node.y - clickY) ** 2);
+                if (dist < 26) {
+                    clickedIdx = idx;
+                }
+            });
+
+            if (clickedIdx !== null) {
+                activeNodeIndex = clickedIdx;
+                isDraggingNode = true;
+                dragOffset.x = clickX - milestoneNodes[clickedIdx].x;
+                dragOffset.y = clickY - milestoneNodes[clickedIdx].y;
+
+                populateFormFromActiveNode();
+                document.getElementById("canvasInteractionFeed").innerText = `Grabbed Year ${milestoneNodes[clickedIdx].year}. Drag to reposition.`;
+                playTone(450, 'sine', 0.08);
+            } else {
+                // Clicking blank space resets selection, or checks if clicking info placard
+                document.getElementById("canvasInteractionFeed").innerText = "Clicked canvas blank space.";
+            }
+        }
+
+        function handleMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            if (isDraggingNode) {
+                // Track dynamic node positions
+                milestoneNodes[activeNodeIndex].x = mouseX - dragOffset.x;
+                milestoneNodes[activeNodeIndex].y = mouseY - dragOffset.y;
+
+                // Safety boundaries inside viewport
+                if (milestoneNodes[activeNodeIndex].x < 20) milestoneNodes[activeNodeIndex].x = 20;
+                if (milestoneNodes[activeNodeIndex].x > canvas.width - 20) milestoneNodes[activeNodeIndex].x = canvas.width - 20;
+                if (milestoneNodes[activeNodeIndex].y < 20) milestoneNodes[activeNodeIndex].y = 20;
+                if (milestoneNodes[activeNodeIndex].y > canvas.height - 20) milestoneNodes[activeNodeIndex].y = canvas.height - 20;
+
+                updateLiveJSONOutput();
+            } else {
+                // Handle node hovering
+                let activeHoverIdx = null;
+                milestoneNodes.forEach((node, idx) => {
+                    const dist = Math.sqrt((node.x - mouseX) ** 2 + (node.y - mouseY) ** 2);
+                    if (dist < 26) {
+                        activeHoverIdx = idx;
+                    }
+                });
+
+                if (activeHoverIdx !== hoveredNodeIndex) {
+                    hoveredNodeIndex = activeHoverIdx;
+                    if (hoveredNodeIndex !== null) {
+                        playTone(600, 'sine', 0.04);
+                        document.getElementById("canvasInteractionFeed").innerText = `Hovering: ${milestoneNodes[hoveredNodeIndex].year} - ${milestoneNodes[hoveredNodeIndex].title}`;
+                    }
+                }
+            }
+        }
+
+        function handleMouseUp() {
+            if (isDraggingNode) {
+                isDraggingNode = false;
+                document.getElementById("canvasInteractionFeed").innerText = `Dropped node at coordinate: ${Math.round(milestoneNodes[activeNodeIndex].x)}, ${Math.round(milestoneNodes[activeNodeIndex].y)}`;
+                playTone(350, 'triangle', 0.1);
+                updateLiveJSONOutput();
+            }
+        }
+
+        function handleDoubleClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const doubleX = e.clientX - rect.left;
+            const doubleY = e.clientY - rect.top;
+
+            // Generate customized year automatically based on the last node's values
+            let nextYearNum = 2031;
+            if (milestoneNodes.length > 0) {
+                const lastNodeYearStr = milestoneNodes[milestoneNodes.length - 1].year;
+                const match = lastNodeYearStr.match(/\d+/);
+                if (match) {
+                    nextYearNum = parseInt(match[0]) + 1;
+                }
+            }
+
+            const newNode = {
+                year: nextYearNum.toString(),
+                title: "New Strategic Milestone Phase",
+                description: "• Dynamic roadmap parameter 1\n• Fully editable target 2\n• Custom engineering objective",
+                status: "Future",
+                color: "#22d3ee",
+                x: doubleX,
+                y: doubleY
+            };
+
+            milestoneNodes.push(newNode);
+            // Sort milestones dynamically by coordinates to draw spline sequentially
+            sortNodesByTimeline();
+
+            // Set new active node
+            activeNodeIndex = milestoneNodes.indexOf(newNode);
+            populateFormFromActiveNode();
+            updateLiveJSONOutput();
+
+            triggerAddBeep();
+            showToast("Milestone Created", `Added target year ${newNode.year} at clicked location!`);
+        }
+
+        // Push selected node values into form fields
+        function populateFormFromActiveNode() {
+            if (milestoneNodes.length === 0) {
+                document.getElementById("selectedNodeIndexLabel").innerText = "No Node Configured";
+                document.getElementById("nodeYear").value = "";
+                document.getElementById("nodeTitle").value = "";
+                document.getElementById("nodeStatus").value = "Future";
+                document.getElementById("nodeColor").value = "#22d3ee";
+                document.getElementById("nodeDescription").value = "";
+                document.getElementById("btnDeleteNode").disabled = true;
+                return;
+            }
+
+            document.getElementById("btnDeleteNode").disabled = false;
+            const node = milestoneNodes[activeNodeIndex];
+            document.getElementById("selectedNodeIndexLabel").innerText = `Selected Slot #${activeNodeIndex + 1}`;
+            document.getElementById("nodeYear").value = node.year;
+            document.getElementById("nodeTitle").value = node.title;
+            document.getElementById("nodeStatus").value = node.status;
+            document.getElementById("nodeColor").value = node.color;
+            document.getElementById("nodeDescription").value = node.description;
+        }
+
+        // Pull form values dynamically back into active node state
+        function updateSelectedNodeFromForm() {
+            if (milestoneNodes.length === 0) return;
+
+            const node = milestoneNodes[activeNodeIndex];
+            node.year = document.getElementById("nodeYear").value;
+            node.title = document.getElementById("nodeTitle").value;
+            node.status = document.getElementById("nodeStatus").value;
+            node.color = document.getElementById("nodeColor").value;
+            node.description = document.getElementById("nodeDescription").value;
+
+            updateLiveJSONOutput();
+        }
+
+        function deleteActiveNode() {
+            if (milestoneNodes.length <= 1) {
+                showToast("Cannot Delete", "You must keep at least one baseline year on the future roadmap!");
+                playTone(200, 'sine', 0.25);
+                return;
+            }
+
+            const removedYear = milestoneNodes[activeNodeIndex].year;
+            milestoneNodes.splice(activeNodeIndex, 1);
+            
+            // Adjust pointer index
+            activeNodeIndex = Math.max(0, activeNodeIndex - 1);
+            populateFormFromActiveNode();
+            updateLiveJSONOutput();
+
+            playTone(280, 'sawtooth', 0.18);
+            showToast("Milestone Removed", `Successfully deleted vision point: ${removedYear}.`);
+        }
+
+        function addMilestoneNode() {
+            // Pick a coordinate inside the canvas randomly or offset from the last node
+            let newX = canvas.width / 2;
+            let newY = canvas.height / 2;
+
+            if (milestoneNodes.length > 0) {
+                const lastNode = milestoneNodes[milestoneNodes.length - 1];
+                newX = Math.min(canvas.width - 100, Math.max(100, lastNode.x + (Math.random() * 200 - 100)));
+                newY = Math.max(50, lastNode.y - 100);
+            }
+
+            let nextYearNum = 2031;
+            if (milestoneNodes.length > 0) {
+                const lastNodeYearStr = milestoneNodes[milestoneNodes.length - 1].year;
+                const match = lastNodeYearStr.match(/\d+/);
+                if (match) {
+                    nextYearNum = parseInt(match[0]) + 1;
+                }
+            }
+
+            const colorsList = ["#f97316", "#22d3ee", "#a855f7", "#eab308"];
+            const randomColor = colorsList[Math.floor(Math.random() * colorsList.length)];
+
+            const newNode = {
+                year: nextYearNum.toString(),
+                title: "Custom strategic milestone",
+                description: "• Feature checklist node item\n• Engineering verification milestone",
+                status: "Future",
+                color: randomColor,
+                x: newX,
+                y: newY
+            };
+
+            milestoneNodes.push(newNode);
+            sortNodesByTimeline();
+            activeNodeIndex = milestoneNodes.indexOf(newNode);
+            
+            populateFormFromActiveNode();
+            updateLiveJSONOutput();
+
+            triggerAddBeep();
+            showToast("Milestone Generated", `New target ${newNode.year} plotted on canvas!`);
+        }
+
+        // Sorts the nodes vertically (y-coordinate or year value) to maintain continuous pathway line sequential integrity
+        function sortNodesByTimeline() {
+            // Sort by descending Y value, meaning bottom nodes (high Y) go first as the present baseline, traveling up to future nodes (low Y)
+            milestoneNodes.sort((a, b) => b.y - a.y);
+        }
+
+        function onCurveSliderChange() {
+            roadCurvinessValue = parseInt(document.getElementById("roadCurveRange").value);
+            
+            const label = document.getElementById("labelCurve");
+            if (roadCurvinessValue < 90) {
+                label.innerText = "Tight Corners";
+                label.className = "text-yellow-500 font-bold";
+            } else if (roadCurvinessValue > 220) {
+                label.innerText = "S-Curves Extreme";
+                label.className = "text-orange-500 font-bold";
+            } else {
+                label.innerText = "Smooth Spline";
+                label.className = "text-cyan-400 font-bold";
+            }
+        }
+
+        function enterFullscreen() {
+            document.getElementById("sidebarPanel").style.width = "0";
+            document.getElementById("sidebarPanel").style.padding = "0";
+            document.getElementById("sidebarPanel").style.overflow = "hidden";
+            document.getElementById("sidebarPanel").style.borderWidth = "0";
+            document.getElementById("exitFullscreenBtn").classList.remove("hidden");
+            document.getElementById("exitFullscreenBtn").classList.add("flex");
+            lucide.createIcons();
+            setTimeout(resizeCanvas, 520); // re-measure after transition
+        }
+
+        function exitFullscreen() {
+            document.getElementById("sidebarPanel").style.width = "";
+            document.getElementById("sidebarPanel").style.padding = "";
+            document.getElementById("sidebarPanel").style.overflow = "";
+            document.getElementById("sidebarPanel").style.borderWidth = "";
+            document.getElementById("exitFullscreenBtn").classList.add("hidden");
+            document.getElementById("exitFullscreenBtn").classList.remove("flex");
+            // Stop simulation if running
+            if (isSimulatingDrive) {
+                clearInterval(simulationInterval);
+                isSimulatingDrive = false;
+                document.getElementById("simSpeedometer").classList.add("hidden");
+            }
+            setTimeout(resizeCanvas, 520);
+        }
+
+        function startRoadSimulation() {
+            if (milestoneNodes.length < 2) {
+                showToast("Add More Nodes", "Please construct at least 2 milestones to simulate the motorcycle route ride.");
+                return;
+            }
+
+            if (isSimulatingDrive) {
+                clearInterval(simulationInterval);
+                isSimulatingDrive = false;
+                document.getElementById("simSpeedometer").classList.add("hidden");
+                exitFullscreen();
+                return;
+            }
+
+            isSimulatingDrive = true;
+            driveSegmentIndex = 0;
+            driveProgress = 0.0;
+            document.getElementById("simSpeedometer").classList.remove("hidden");
+            document.getElementById("consoleFeed").innerText = "Simulation Engaged: Cruising Royal Enfield up the timeline road!";
+            playTone(220, 'triangle', 0.2);
+            enterFullscreen();
+
+            // Simulation loop sequence
+            simulationInterval = setInterval(() => {
+                if (driveSegmentIndex >= milestoneNodes.length - 1) {
+                    // Drive Completed
+                    clearInterval(simulationInterval);
+                    isSimulatingDrive = false;
+                    document.getElementById("simSpeedometer").classList.add("hidden");
+                    document.getElementById("consoleFeed").innerText = "Simulation Completed! Reached the absolute boundary of the upcoming years.";
+                    triggerSuccessBeep();
+                    showToast("Simulation Complete", "You have arrived successfully at the final strategic checkpoint!");
+                    exitFullscreen();
+                    return;
+                }
+
+                // Move drive point along segment Bezier curve
+                driveProgress += 0.03; // step size speed
+
+                const p0 = milestoneNodes[driveSegmentIndex];
+                const p1 = milestoneNodes[driveSegmentIndex+1];
+
+                // Calculate control points identical to drawing
+                const cpX1 = p0.x;
+                const cpY1 = p0.y - roadCurvinessValue;
+                const cpX2 = p1.x;
+                const cpY2 = p1.y + roadCurvinessValue;
+
+                // De Casteljau's algorithm for cubic Bezier coordinate estimation
+                const t = driveProgress;
+                const mt = 1 - t;
+
+                driveMotorcyclePos.x = (mt**3) * p0.x + 3*(mt**2)*t * cpX1 + 3*mt*(t**2) * cpX2 + (t**3) * p1.x;
+                driveMotorcyclePos.y = (mt**3) * p0.y + 3*(mt**2)*t * cpY1 + 3*mt*(t**2) * cpY2 + (t**3) * p1.y;
+
+                // Update speedometer readout
+                const speedRpm = Math.round(3000 + (Math.sin(driveProgress * Math.PI) * 4500));
+                document.getElementById("simSpeedVal").innerText = `${speedRpm} RPM`;
+
+                // Synthesize engine exhaust sound pitch
+                playMotorcycleRevTone(driveProgress);
+
+                if (driveProgress >= 1.0) {
+                    // Proceed to next year segment node
+                    driveProgress = 0.0;
+                    driveSegmentIndex++;
+                    activeNodeIndex = driveSegmentIndex;
+                    populateFormFromActiveNode();
+                    document.getElementById("consoleFeed").innerText = `Checkpoint Reached: Passed Year ${p1.year}!`;
+                    playTone(880, 'sine', 0.1);
+                }
+
+            }, 55); // Tick rate speed
+        }
+
+        function loadSampleTemplate() {
+            const sx = canvas.width  / DESIGN_W;
+            const sy = canvas.height / DESIGN_H;
+            milestoneNodes = [
+                {
+                    year: "2026",
+                    title: "RE Wingman 3.0 Platform Integration",
+                    description: "• Deep GPS integration via high-frequency telemetry chips.\n• Live tire pressure reporting directly in the Wingman mobile app.\n• Immediate event geofence alerting system launch.",
+                    status: "Completed",
+                    color: "#22d3ee",
+                    x: 120 * sx, y: 540 * sy
+                },
+                {
+                    year: "2027",
+                    title: "AI Adaptive Rider Assistant",
+                    description: "• Machine learning analysis of engine acoustics to predict maintenance.\n• Voice-controlled head-up displays (HUD) inside smart touring helmets.\n• Proactive hazard warnings mapped dynamically via fellow rider routes.",
+                    status: "Active",
+                    color: "#f97316",
+                    x: 680 * sx, y: 440 * sy
+                },
+                {
+                    year: "2028",
+                    title: "Decarbonized Sustainable Motoring",
+                    description: "• Sustainable biofuels validation program across multi-terrain platforms.\n• Eco-route optimizations built into Royal Enfield Maps for mileage mapping.\n• Green emission tracker badges unlocked on the community hub.",
+                    status: "Future",
+                    color: "#eab308",
+                    x: 180 * sx, y: 310 * sy
+                },
+                {
+                    year: "2029",
+                    title: "Next-Gen EV Cruiser Ecosystem",
+                    description: "• Battery health predictive diagnostics & ultra-fast charge networks map.\n• Custom motor-torque tuning profiles based on rider history.\n• Sound-profile synthesis generator: choose your digital exhaust tune.",
+                    status: "Future",
+                    color: "#a855f7",
+                    x: 760 * sx, y: 180 * sy
+                },
+                {
+                    year: "2030",
+                    title: "Royal Enfield Galactic Hub",
+                    description: "• Pure concept: Augmented reality HUD navigation through physical events.\n• Ultimate community connection: real-time telemetry sharing for global tours.\n• AI-generated ride documentaries recorded in beautiful high fidelity.",
+                    status: "Future",
+                    color: "#22d3ee",
+                    x: 450 * sx, y: 60 * sy
+                }
+            ];
+
+            activeNodeIndex = 0;
+            populateFormFromActiveNode();
+            updateLiveJSONOutput();
+            playTone(500, 'sine', 0.2);
+            showToast("RE Sample Loaded", "Default strategic roadmap design has been successfully restored.");
+        }
+
+        function clearToEmptyTemplate() {
+            const sx = canvas.width  / DESIGN_W;
+            const sy = canvas.height / DESIGN_H;
+            milestoneNodes = [
+                {
+                    year: "YEAR 1",
+                    title: "First Strategic Milestone Title",
+                    description: "• Customize this bullet item in the configurator\n• Highlight key achievements or targets\n• Enter your project milestones",
+                    status: "Active",
+                    color: "#f97316",
+                    x: 180 * sx, y: 450 * sy
+                },
+                {
+                    year: "YEAR 2",
+                    title: "Second Strategic Milestone Title",
+                    description: "• Customize this bullet item in the configurator\n• Highlight key achievements or targets\n• Enter your project milestones",
+                    status: "Future",
+                    color: "#22d3ee",
+                    x: 520 * sx, y: 150 * sy
+                }
+            ];
+
+            activeNodeIndex = 0;
+            populateFormFromActiveNode();
+            updateLiveJSONOutput();
+            playTone(200, 'sine', 0.2);
+            showToast("Template Cleared", "The canvas is now an empty template ready for custom configuration!");
+        }
+
+        function updateLiveJSONOutput() {
+            const rawString = JSON.stringify(milestoneNodes, null, 2);
+            document.getElementById("jsonConfigBox").value = rawString;
+        }
+
+        function importJSONFromBox() {
+            try {
+                const parsed = JSON.parse(document.getElementById("jsonConfigBox").value);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    milestoneNodes = parsed;
+                    activeNodeIndex = 0;
+                    populateFormFromActiveNode();
+                    showToast("JSON Imported", "Successfully updated canvas dynamically from raw configurations!");
+                    playTone(660, 'sine', 0.15);
+                } else {
+                    throw new Error();
+                }
+            } catch (err) {
+                showToast("JSON Error", "The JSON format is invalid. Double check bracket formats.");
+                playTone(150, 'sawtooth', 0.2);
+            }
+        }
+
+        function copyToClipboardJSON() {
+            const copyText = document.getElementById("jsonConfigBox");
+            copyText.select();
+            document.execCommand('copy');
+            
+            playTone(900, 'triangle', 0.08);
+            showToast("Copied to Clipboard", "Copied raw configuration JSON. Save this file to back up your custom template!");
+        }
+
+        function downloadConfigJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(milestoneNodes, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "RE_Motoverse_Roadmap.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+
+            playTone(700, 'sine', 0.12);
+            showToast("Export Initiated", "Roadmap template configuration has been downloaded.");
+        }
+
+        // UI Toast Alert Helper (Custom alternative to alert() window)
+        function showToast(title, msg) {
+            const toast = document.getElementById("toastNotification");
+            document.getElementById("toastMessage").innerText = msg;
+            toast.querySelector("h4").innerText = title.toUpperCase();
+            
+            // Pop in
+            toast.classList.remove("translate-y-24", "opacity-0");
+            toast.classList.add("translate-y-0", "opacity-100");
+
+            setTimeout(() => {
+                // Fade out
+                toast.classList.remove("translate-y-0", "opacity-100");
+                toast.classList.add("translate-y-24", "opacity-0");
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

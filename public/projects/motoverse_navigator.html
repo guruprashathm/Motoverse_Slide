@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" style="height:100%;overflow:hidden;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE Motoverse - Smart Navigator & QR Parking</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syncopate:wght@400;700&display=swap');
+        
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #030508;
+        }
+        
+        .syncopate {
+            font-family: 'Syncopate', sans-serif;
+        }
+
+        /* Tech grid style overlay background */
+        .scanlines {
+            background: linear-gradient(
+                rgba(18, 24, 38, 0) 50%, 
+                rgba(0, 0, 0, 0.4) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(249, 115, 22, 0.02) 0%,
+                rgba(0, 0, 0, 0) 10%
+            );
+            background-size: 100% 4px, 12px 100%;
+        }
+
+        /* Glassmorphism styling */
+        .glass-panel {
+            background: rgba(10, 15, 26, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Gyp / glow indicators */
+        .neon-glow-orange {
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.45);
+        }
+        .neon-glow-cyan {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.45);
+        }
+
+        /* Pulse animation for active beacons */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.65); opacity: 1; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+        .glowing-beacon::before {
+            content: '';
+            position: absolute;
+            width: 250%;
+            height: 250%;
+            border: 2px solid #f97316;
+            border-radius: 50%;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+        }
+
+        /* ── Click-to-load splash ── */
+        #splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:#030508;cursor:pointer;transition:opacity 0.3s;}
+        #splash:hover{background:#070c14;}
+        .sp-icon{font-size:64px;opacity:0.7;}
+        .sp-label{font-size:13px;color:rgba(148,163,184,0.6);text-transform:uppercase;letter-spacing:0.15em;}
+        .sp-btn{padding:10px 28px;border-radius:999px;background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.4);color:#f97316;font-size:13px;letter-spacing:0.08em;}
+    </style>
+</head>
+<body class="text-slate-100 flex flex-col relative scanlines" style="height:100%;">
+<div id="splash" onclick="loadApp()">
+  <div class="sp-icon">🧭</div>
+  <div class="sp-label">Motoverse Navigator</div>
+  <div class="sp-btn">▶ Launch Demo</div>
+</div>
+
+    <header class="border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-md px-6 py-4 z-20 flex flex-wrap justify-between items-center gap-4 relative">
+        <div class="flex items-center gap-4">
+            <div class="p-2.5 bg-orange-500/10 border border-orange-500/30 rounded-xl relative overflow-hidden">
+                <i data-lucide="map" class="w-7 h-7 text-orange-500 animate-pulse relative z-10"></i>
+            </div>
+            <div>
+                <h1 class="text-lg md:text-xl font-bold tracking-widest text-slate-100 uppercase syncopate">
+                    RE <span class="text-orange-500">MOTOVERSE</span> // NAV HUB
+                </h1>
+                <p class="text-[10px] text-slate-400 tracking-wider font-mono uppercase">Vagator Indoor Pathfinding & QR parking recovery matrix</p>
+            </div>
+        </div>
+
+        <!-- Mode Toggle & Utility controls -->
+        <div class="flex flex-wrap items-center gap-3">
+            <button id="sfxToggle" class="px-3.5 py-1.5 border border-slate-800 bg-slate-900/60 rounded-xl hover:border-orange-500/40 hover:text-orange-400 transition-all duration-200 flex items-center gap-2 text-xs font-mono">
+                <i data-lucide="volume-2" id="sfxIcon" class="w-3.5 h-3.5 text-orange-500"></i>
+                <span id="sfxLabel">SFX: ACTIVE</span>
+            </button>
+            <div class="text-xs bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-3 py-1.5 rounded-xl font-mono flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 bg-cyan-400 rounded-full animate-ping"></span>
+                <span>SYSTEM ONLINE</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex flex-row relative" style="flex:1 1 0%;min-height:0;overflow:hidden;">
+        
+        <!-- LEFT CONTROL PANEL -->
+        <aside class="w-[400px] border-r border-slate-800/60 bg-slate-950/80 backdrop-blur-md flex flex-col p-5 z-10 shrink-0 gap-4 overflow-y-auto" style="max-height:100%;">
+            
+            <!-- Dashboard Mode Navigation Tabs -->
+            <div class="grid grid-cols-2 gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800/80">
+                <button id="tabParking" class="py-2.5 px-3 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2 bg-orange-500 text-white font-mono shadow-lg shadow-orange-500/10" onclick="switchMode('parking')">
+                    <i data-lucide="qr-code" class="w-4 h-4"></i>
+                    QR Parking Guard
+                </button>
+                <button id="tabIndoor" class="py-2.5 px-3 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-100 font-mono hover:bg-slate-800" onclick="switchMode('indoor')">
+                    <i data-lucide="navigation" class="w-4 h-4"></i>
+                    Stall Navigator
+                </button>
+            </div>
+
+            <!-- MODE 1: QR Parking Content -->
+            <div id="panelParking" class="space-y-4">
+                <div class="bg-slate-900/40 border border-slate-800/60 rounded-xl p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span class="text-xs font-mono text-orange-400 uppercase tracking-widest">Active QR Parking Mode</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded">RE App Link</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        To register your bike's exact slot, click any <strong class="text-orange-400">Green QR Stand</strong> icon on the map canvas to simulate a QR scan. This locks your spot inside the RE App context.
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-[11px] font-mono pt-1">
+                        <div class="p-2 rounded bg-slate-950 border border-slate-800">
+                            <div class="text-slate-400">REGISTERED SPOT</div>
+                            <div id="parkingSpotLabel" class="font-bold text-orange-400 mt-0.5">NOT RECORDED</div>
+                        </div>
+                        <div class="p-2 rounded bg-slate-950 border border-slate-800">
+                            <div class="text-slate-400">DISTANCE TO WALK</div>
+                            <div id="parkingDistLabel" class="font-bold text-cyan-400 mt-0.5">-- meters</div>
+                        </div>
+                    </div>
+                    <button id="btnWalkToBike" disabled class="w-full py-3 bg-slate-800 text-slate-500 cursor-not-allowed rounded-xl font-bold font-mono text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2" onclick="startWalkSimulation()">
+                        <i data-lucide="footprints" class="w-4 h-4 animate-bounce"></i>
+                        Walk to My Vehicle
+                    </button>
+                </div>
+            </div>
+
+            <!-- MODE 2: Indoor Wayfinder Content -->
+            <div id="panelIndoor" class="space-y-4 hidden">
+                <div class="bg-slate-900/40 border border-slate-800/60 rounded-xl p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span class="text-xs font-mono text-cyan-400 uppercase tracking-widest">Stall-To-Stall Pathfinding</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded">Turn-by-Turn</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Select your destination stall or experience center arena below to generate a guided path from the Main Entrance.
+                    </p>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-mono text-slate-400">Choose Destination Stall:</label>
+                        <select id="stallSelect" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200 font-mono focus:outline-none focus:border-cyan-500/60" onchange="onStallSelectChange()">
+                            <!-- Stalls are dynamically populated -->
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-[11px] font-mono pt-1">
+                        <div class="p-2 rounded bg-slate-950 border border-slate-800">
+                            <div class="text-slate-400">WALK TIME ESTIMATE</div>
+                            <div id="indoorTimeLabel" class="font-bold text-cyan-400 mt-0.5">-- secs</div>
+                        </div>
+                        <div class="p-2 rounded bg-slate-950 border border-slate-800">
+                            <div class="text-slate-400">DESTINATION COORDS</div>
+                            <div id="indoorCoordsLabel" class="font-bold text-slate-300 mt-0.5">-- , --</div>
+                        </div>
+                    </div>
+                    <button id="btnNavigateStall" class="w-full py-3 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 rounded-xl font-bold font-mono text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2" onclick="startWalkSimulation()">
+                        <i data-lucide="navigation-2" class="w-4 h-4"></i>
+                        Plot & Guide Path
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-950 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-3 relative overflow-hidden flex-grow">
+                <!-- Phone Bezel Details -->
+                <div class="absolute top-1 left-1/2 transform -translate-x-1/2 w-20 h-4 bg-slate-900 rounded-full z-10 flex items-center justify-center">
+                    <span class="w-2 h-2 bg-slate-950 rounded-full mr-2"></span>
+                    <span class="w-6 h-1 bg-slate-950 rounded-full"></span>
+                </div>
+                
+                <div class="pt-2 flex items-center justify-between text-[10px] font-mono text-slate-400 border-b border-slate-900 pb-2">
+                    <span>RE-APP: ACTIVE WINGMAN</span>
+                    <span id="phoneClock" class="font-bold text-slate-300">09:05 PM</span>
+                </div>
+
+                <!-- Simulation Info Block -->
+                <div class="flex-grow flex flex-col justify-between space-y-4 pt-1">
+                    <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-800/40 relative">
+                        <div class="flex items-center gap-2.5">
+                            <div id="hudIconContainer" class="p-2 bg-orange-500/10 border border-orange-500/30 rounded-lg text-orange-400">
+                                <i data-lucide="footprints" id="hudDirectionIcon" class="w-5 h-5"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">NAV INSTRUCTIONS</div>
+                                <div id="hudDirectionText" class="text-xs font-bold text-slate-100">Scanning parking bay tags or selection...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Walking Metrics Graph -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-[10px] font-mono">
+                            <span class="text-slate-400">SIMULATION POSITION</span>
+                            <span id="walkProgressText" class="text-cyan-400 font-bold">READY TO COMMENCE</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-slate-900 rounded-full overflow-hidden">
+                            <div id="walkProgressBar" class="h-full bg-gradient-to-r from-orange-500 to-cyan-500 w-0 transition-all duration-300"></div>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry Data Grid -->
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono">
+                        <div class="bg-slate-900/40 p-2 rounded-lg border border-slate-800/60">
+                            <span class="text-[9px] text-slate-400 block mb-0.5">CURRENT ACTION</span>
+                            <span id="telemetryAction" class="font-bold text-orange-400 text-[10px]">IDLE</span>
+                        </div>
+                        <div class="bg-slate-900/40 p-2 rounded-lg border border-slate-800/60">
+                            <span class="text-[9px] text-slate-400 block mb-0.5">STEPS TAKEN</span>
+                            <span id="telemetrySteps" class="font-bold text-slate-200">0</span>
+                        </div>
+                        <div class="bg-slate-900/40 p-2 rounded-lg border border-slate-800/60">
+                            <span class="text-[9px] text-slate-400 block mb-0.5">COMPASS DIRECT</span>
+                            <span id="telemetryHeading" class="font-bold text-cyan-400">--° N</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Bar -->
+            <div class="text-[10px] font-mono text-slate-500 text-center">
+                Click map to place your "Current Location" pin dynamically.
+            </div>
+        </aside>
+
+        <!-- RIGHT AREA: HIGH VISIBILITY MAP CANVAS CONTAINER -->
+        <section class="flex flex-col relative bg-slate-950 p-4 overflow-hidden" style="flex:1 1 0%;min-height:0;">
+            <!-- Compact legend — bottom-left, non-intrusive -->
+            <div class="absolute bottom-20 left-8 z-10 glass-panel px-3 py-2 rounded-xl border border-slate-800 flex flex-row items-center gap-3 text-[10px] font-mono">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-cyan-400"></span>Current Pin</div>
+                <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-orange-400"></span>Parked Bike</div>
+                <div class="flex items-center gap-1.5"><span class="w-2 h-2 bg-green-500 rounded-sm"></span>QR Bay</div>
+                <div class="flex items-center gap-1.5"><span class="w-2 h-2 bg-purple-500 rounded-sm"></span>Stalls</div>
+            </div>
+            <!-- Hidden element to keep diagResolution update from throwing JS errors -->
+            <span id="diagResolution" class="hidden"></span>
+
+            <div class="flex-grow relative rounded-2xl border border-slate-800/80 bg-[#06090f] overflow-hidden group">
+                <canvas id="venueCanvas" class="block w-full h-full cursor-crosshair"></canvas>
+            </div>
+
+            <!-- Bottom Live Action Console Bar -->
+            <div class="mt-4 glass-panel border border-slate-800/80 rounded-xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+                    <span class="text-slate-400">IN-USE LOGS:</span>
+                    <span id="consoleFeed" class="text-slate-200">System Ready. Please click on a Parking Spot or Experience Stall.</span>
+                </div>
+                <div class="flex gap-2">
+                    <button class="px-3 py-1 bg-slate-900 border border-slate-800 rounded hover:border-slate-700 hover:text-slate-200 transition-all text-[11px]" onclick="resetSimulationState()">
+                        Reset Map
+                    </button>
+                    <button class="px-3 py-1 bg-slate-900 border border-slate-800 rounded hover:border-slate-700 hover:text-slate-200 transition-all text-[11px]" onclick="initSampleRoute()">
+                        Plot Demo Path
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="qrScannerModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center hidden">
+        <div class="glass-panel max-w-sm w-full p-6 rounded-2xl border border-orange-500/40 text-center space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h3 class="font-mono font-bold text-orange-400 uppercase tracking-widest text-sm flex items-center gap-2">
+                    <i data-lucide="scan" class="w-4 h-4 animate-spin"></i>
+                    RE App Scanner
+                </h3>
+                <button onclick="closeQrModal()" class="text-slate-400 hover:text-white font-mono text-xs">✕ CLOSE</button>
+            </div>
+            
+            <p class="text-xs text-slate-300 leading-relaxed font-mono">
+                Line up the Motoverse QR coordinate frame inside the target zone below to pair with your RE App profile.
+            </p>
+
+            <!-- Target bracket zone -->
+            <div class="relative w-48 h-48 mx-auto border-2 border-slate-700 rounded-xl flex items-center justify-center overflow-hidden bg-slate-900">
+                <div class="absolute inset-4 border border-dashed border-orange-500/50"></div>
+                <!-- Dynamic simulated QR visual -->
+                <div class="w-32 h-32 bg-white p-2 rounded flex flex-col items-center justify-center">
+                    <div id="simulatedQrCode" class="grid grid-cols-6 gap-0.5 w-full h-full bg-slate-900">
+                        <!-- Dynamic matrix points -->
+                    </div>
+                </div>
+                <!-- Laser line scanning animation -->
+                <div class="absolute inset-x-0 h-0.5 bg-orange-500 animate-pulse shadow-[0_0_10px_rgba(249,115,22,1)]" style="animation: scanline 2.5s infinite linear;"></div>
+            </div>
+
+            <div class="text-[11px] font-mono text-slate-400 bg-slate-950 p-2.5 rounded border border-slate-800">
+                STALL SLOT ID: <span id="modalStallId" class="text-orange-400 font-bold">BIKE-PARK-B4</span><br>
+                GPS LOCK: <span id="modalStallCoords" class="text-cyan-400">15.5982° N, 73.7412° E</span>
+            </div>
+
+            <button onclick="confirmQrPairing()" class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-xl font-bold font-mono text-xs uppercase tracking-widest hover:brightness-110 shadow-lg shadow-orange-500/20 transition-all">
+                Confirm Slot Pairing
+            </button>
+        </div>
+    </div>
+
+    <!-- Styles for laser line -->
+    <style>
+        @keyframes scanline {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+    </style>
+
+    <script>
+        // Web Audio Synthesizer Setup
+        let audioCtx = null;
+        function playTone(freq, type, duration) {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = type || 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {
+                console.log("Audio not allowed yet or not supported", e);
+            }
+        }
+
+        // Play brief scan success tune
+        function triggerScanBeep() {
+            playTone(880, 'sine', 0.1);
+            setTimeout(() => playTone(1320, 'sine', 0.15), 100);
+        }
+
+        // Play small walk footsteps sound
+        function triggerFootstepSound(pitch) {
+            playTone(pitch || 180, 'triangle', 0.05);
+        }
+
+        // Core State
+        let activeTab = 'parking'; // 'parking' | 'indoor'
+        let canvas, ctx;
+        
+        // Define exact node-based coordinates mapping (out of 1000 width/600 height coordinate system)
+        // These nodes will represent stages, food hubs, parking slots and corridors
+        const nodes = {
+            entrance: { x: 120, y: 520, name: "MAIN GATEWAY ENTRANCE", isWaypoint: true },
+            junc_entry: { x: 180, y: 440, name: "ENTRY CORRIDOR" },
+            junc_main: { x: 420, y: 320, name: "CENTRAL INTERSECT CROSSING" },
+            junc_east: { x: 680, y: 320, name: "EAST AVENUE ROUNDABOUT" },
+            junc_north: { x: 420, y: 150, name: "NORTH BLOCK ENTRY" },
+            
+            // Parking Spots (Active QR Tags)
+            park_bike_a: { x: 110, y: 350, name: "BIKE PARKING SLOT A1 (QR STAND)", isParking: true, slotCode: "BIKE-ZONE-A1" },
+            park_bike_b: { x: 140, y: 220, name: "BIKE PARKING SLOT B4 (QR STAND)", isParking: true, slotCode: "BIKE-ZONE-B4" },
+            park_car_x: { x: 260, y: 150, name: "CAR PARKING SLOT X9 (QR STAND)", isParking: true, slotCode: "CAR-ZONE-X9" },
+            park_bike_c: { x: 300, y: 450, name: "BIKE PARKING SLOT C12 (QR STAND)", isParking: true, slotCode: "BIKE-ZONE-C12" },
+
+            // Experience Stalls (Indoor Arenas)
+            stall_main_stage: { x: 450, y: 110, name: "MAIN ARENA LIVE STAGE", isStall: true },
+            stall_dirt_track: { x: 880, y: 180, name: "HILLTOP DIRT TRACK EXPERIENCE", isStall: true },
+            stall_custom_shed: { x: 500, y: 460, name: "RE CUSTOM BUILD EXPO SHED", isStall: true },
+            stall_app_pavilion: { x: 420, y: 250, name: "RE SMART CONNECTIVITY PAVILION", isStall: true },
+            stall_food_hub: { x: 780, y: 440, name: "MOTOVERSE FOOD STREET & BAR", isStall: true },
+            stall_club_lounge: { x: 860, y: 320, name: "RE OWNERS EXCLUSIVE CLUB LOUNGE", isStall: true }
+        };
+
+        // Graph adjacency links representing pathways on venue map (no-clip walking lines)
+        const connections = [
+            ["entrance", "junc_entry"],
+            ["junc_entry", "park_bike_a"],
+            ["park_bike_a", "park_bike_b"],
+            ["park_bike_b", "park_car_x"],
+            ["park_car_x", "junc_north"],
+            ["junc_entry", "park_bike_c"],
+            ["park_bike_c", "junc_main"],
+            ["junc_entry", "junc_main"],
+            
+            ["junc_main", "stall_app_pavilion"],
+            ["stall_app_pavilion", "stall_main_stage"],
+            ["junc_north", "stall_main_stage"],
+            
+            ["junc_main", "stall_custom_shed"],
+            ["junc_main", "junc_east"],
+            ["junc_east", "stall_club_lounge"],
+            ["stall_club_lounge", "stall_dirt_track"],
+            ["junc_north", "stall_dirt_track"],
+            ["junc_east", "stall_food_hub"],
+            ["stall_custom_shed", "stall_food_hub"]
+        ];
+
+        // Track user parameters
+        let currentUserPos = { x: 120, y: 520 }; // Starts at Main Gateway Entrance
+        let registeredVehiclePos = null; // Stored registered location once QR scanned
+        let registeredVehicleCode = "";
+        
+        let destinationNodeId = "stall_app_pavilion"; // For Indoor mode
+        let currentRoutePath = []; // Calculated path
+        
+        // Simulation walking stats
+        let isSimulatingWalk = false;
+        let walkProgress = 0; // 0 to 1
+        let animateStepsCount = 0;
+        let walkInterval = null;
+
+        // Active highlighted node (hover state)
+        let hoveredNodeId = null;
+
+        function loadApp() {
+            const s = document.getElementById('splash');
+            s.style.opacity = '0';
+            setTimeout(() => { s.style.display = 'none'; initApp(); }, 300);
+        }
+
+        // Initialize Application
+        function initApp() {
+            lucide.createIcons();
+            canvas = document.getElementById("venueCanvas");
+            ctx = canvas.getContext("2d");
+
+            // Setup canvas resizing listeners
+            window.addEventListener("resize", resizeCanvas);
+            resizeCanvas();
+            requestAnimationFrame(() => { resizeCanvas(); });
+
+            // Populate destination dropdown list in sidebar
+            populateStallDropdown();
+
+            // Setup mouse & touch interactivity on map
+            canvas.addEventListener("mousemove", onCanvasMouseMove);
+            canvas.addEventListener("click", onCanvasClick);
+            
+            // Render default starting screen map
+            updateNavigationRoute();
+            drawMap();
+
+            // Phone time clock loop
+            setInterval(() => {
+                const now = new Date();
+                let hours = now.getHours();
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12;
+                document.getElementById("phoneClock").innerText = `${hours}:${minutes} ${ampm}`;
+            }, 60000);
+        };
+
+        // Handle canvas sizing dynamically
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width  = container.clientWidth  || window.innerWidth;
+            canvas.height = container.clientHeight || window.innerHeight;
+
+            document.getElementById("diagResolution").innerText = `${canvas.width} x ${canvas.height} px`;
+            drawMap();
+        }
+
+        function findShortestPath(startNodeId, targetNodeId) {
+            // Setup simple distance and predecessor structures
+            const dists = {};
+            const prev = {};
+            const unvisited = new Set();
+
+            Object.keys(nodes).forEach(nodeId => {
+                dists[nodeId] = Infinity;
+                prev[nodeId] = null;
+                unvisited.add(nodeId);
+            });
+
+            dists[startNodeId] = 0;
+
+            while (unvisited.size > 0) {
+                // Find node with minimum distance
+                let minNode = null;
+                unvisited.forEach(nodeId => {
+                    if (minNode === null || dists[nodeId] < dists[minNode]) {
+                        minNode = nodeId;
+                    }
+                });
+
+                if (minNode === null || dists[minNode] === Infinity) {
+                    break;
+                }
+
+                if (minNode === targetNodeId) {
+                    break;
+                }
+
+                unvisited.delete(minNode);
+
+                // Check neighbors
+                const neighbors = getNeighbors(minNode);
+                neighbors.forEach(neighborId => {
+                    if (unvisited.has(neighborId)) {
+                        const d = calculateDistance(nodes[minNode], nodes[neighborId]);
+                        const alt = dists[minNode] + d;
+                        if (alt < dists[neighborId]) {
+                            dists[neighborId] = alt;
+                            prev[neighborId] = minNode;
+                        }
+                    }
+                });
+            }
+
+            // Reconstruct path
+            const path = [];
+            let curr = targetNodeId;
+            if (prev[curr] !== null || curr === startNodeId) {
+                while (curr !== null) {
+                    path.unshift(curr);
+                    curr = prev[curr];
+                }
+            }
+            return path;
+        }
+
+        function getNeighbors(nodeId) {
+            const neighbors = [];
+            connections.forEach(conn => {
+                if (conn[0] === nodeId) neighbors.push(conn[1]);
+                if (conn[1] === nodeId) neighbors.push(conn[0]);
+            });
+            return neighbors;
+        }
+
+        function calculateDistance(n1, n2) {
+            const dx = n1.x - n2.x;
+            const dy = n1.y - n2.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // Populate destination selectors
+        function populateStallDropdown() {
+            const select = document.getElementById("stallSelect");
+            select.innerHTML = "";
+            
+            Object.keys(nodes).forEach(key => {
+                const node = nodes[key];
+                if (node.isStall) {
+                    const opt = document.createElement("option");
+                    opt.value = key;
+                    opt.innerText = node.name;
+                    select.appendChild(opt);
+                }
+            });
+            destinationNodeId = select.value;
+        }
+
+        // Map interaction modes toggles
+        function switchMode(mode) {
+            activeTab = mode;
+            
+            const tabP = document.getElementById("tabParking");
+            const tabI = document.getElementById("tabIndoor");
+            const panelP = document.getElementById("panelParking");
+            const panelI = document.getElementById("panelIndoor");
+
+            if (mode === 'parking') {
+                tabP.className = "py-2.5 px-3 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2 bg-orange-500 text-white font-mono shadow-lg shadow-orange-500/10";
+                tabI.className = "py-2.5 px-3 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-100 font-mono hover:bg-slate-800";
+                panelP.classList.remove("hidden");
+                panelI.classList.add("hidden");
+                document.getElementById("consoleFeed").innerText = "Parking mode enabled. Scan QR standards highlighted in Green.";
+                playTone(440, 'sine', 0.1);
+            } else {
+                tabI.className = "py-2.5 px-3 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2 bg-cyan-500 text-white font-mono shadow-lg shadow-cyan-500/10";
+                tabP.className = "py-2.5 px-3 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-100 font-mono hover:bg-slate-800";
+                panelI.classList.remove("hidden");
+                panelP.classList.add("hidden");
+                document.getElementById("consoleFeed").innerText = "Stall Wayfinding active. Select destination in sidebar dropdown.";
+                playTone(550, 'sine', 0.1);
+            }
+            updateNavigationRoute();
+            drawMap();
+        }
+
+        function onStallSelectChange() {
+            destinationNodeId = document.getElementById("stallSelect").value;
+            updateNavigationRoute();
+            drawMap();
+        }
+
+        // Calculate current route based on context
+        function updateNavigationRoute() {
+            // Snap current user cursor to closest graph node to begin route
+            const startNodeId = findClosestNodeId(currentUserPos.x, currentUserPos.y);
+            
+            if (activeTab === 'parking') {
+                if (registeredVehiclePos) {
+                    const endNodeId = findClosestNodeId(registeredVehiclePos.x, registeredVehiclePos.y);
+                    currentRoutePath = findShortestPath(startNodeId, endNodeId);
+                    
+                    // Update stats
+                    const totalDist = Math.round(calculatePathDistance(currentRoutePath) * 0.4);
+                    document.getElementById("parkingDistLabel").innerText = `${totalDist} meters`;
+                    document.getElementById("hudDirectionText").innerText = `Trace path backward to lock stand at ${registeredVehicleCode}.`;
+                    document.getElementById("btnWalkToBike").disabled = false;
+                    document.getElementById("btnWalkToBike").className = "w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl font-bold font-mono text-xs uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 neon-glow-orange cursor-pointer";
+                } else {
+                    currentRoutePath = [];
+                    document.getElementById("parkingDistLabel").innerText = `-- meters`;
+                    document.getElementById("hudDirectionText").innerText = `Scan any QR code marker to register your parked bike coordinate first.`;
+                    document.getElementById("btnWalkToBike").disabled = true;
+                    document.getElementById("btnWalkToBike").className = "w-full py-3 bg-slate-800 text-slate-500 cursor-not-allowed rounded-xl font-bold font-mono text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2";
+                }
+            } else {
+                // Indoor Wayfinding
+                currentRoutePath = findShortestPath(startNodeId, destinationNodeId);
+                const totalDist = Math.round(calculatePathDistance(currentRoutePath) * 0.4);
+                const secondsEst = Math.round(totalDist * 0.95);
+                
+                document.getElementById("indoorTimeLabel").innerText = `${secondsEst} secs`;
+                const destNode = nodes[destinationNodeId];
+                document.getElementById("indoorCoordsLabel").innerText = `${Math.round(destNode.x)}, ${Math.round(destNode.y)}`;
+                document.getElementById("hudDirectionText").innerText = `Walking directions to ${destNode.name} are active.`;
+            }
+        }
+
+        function calculatePathDistance(pathArray) {
+            let total = 0;
+            for (let i = 0; i < pathArray.length - 1; i++) {
+                total += calculateDistance(nodes[pathArray[i]], nodes[pathArray[i+1]]);
+            }
+            return total;
+        }
+
+        // Find closest graph node to physical pixel coordinate
+        function findClosestNodeId(x, y) {
+            let minNodeId = null;
+            let minDist = Infinity;
+            Object.keys(nodes).forEach(key => {
+                const dx = nodes[key].x - x;
+                const dy = nodes[key].y - y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < minDist) {
+                    minDist = dist;
+                    minNodeId = key;
+                }
+            });
+            return minNodeId;
+        }
+
+        function drawMap() {
+            if (!ctx) return;
+            
+            // Clear Screen
+            ctx.fillStyle = "#040710";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Calculate responsive scale factor relative to virtual (1000 x 600) grid coords
+            const scaleX = canvas.width / 1000;
+            const scaleY = canvas.height / 600;
+
+            // Helper to map virtual coordinate to active pixel space
+            function mapPt(pt) {
+                return {
+                    x: pt.x * scaleX,
+                    y: pt.y * scaleY
+                };
+            }
+
+            // Draw Background Radar Grids
+            ctx.strokeStyle = "rgba(249, 115, 22, 0.04)";
+            ctx.lineWidth = 1;
+            for (let i = 50; i < 1000; i += 50) {
+                ctx.beginPath();
+                ctx.moveTo(i * scaleX, 0);
+                ctx.lineTo(i * scaleX, canvas.height);
+                ctx.stroke();
+            }
+            for (let j = 50; j < 600; j += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, j * scaleY);
+                ctx.lineTo(canvas.width, j * scaleY);
+                ctx.stroke();
+            }
+
+            // Draw Zone Boundary Fences & Paths Layout
+            ctx.fillStyle = "rgba(10, 20, 35, 0.4)";
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+            ctx.lineWidth = 2;
+            
+            // Left Parking Zone Frame Area
+            ctx.beginPath();
+            ctx.rect(30 * scaleX, 80 * scaleY, 280 * scaleX, 420 * scaleY);
+            ctx.fill();
+            ctx.stroke();
+
+            // Right Event Arena Area
+            ctx.beginPath();
+            ctx.arc(680 * scaleX, 300 * scaleY, 250 * Math.max(scaleX, scaleY), 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(10, 25, 45, 0.2)";
+            ctx.fill();
+            ctx.stroke();
+
+            // Draw main walkways (connections)
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+            ctx.lineWidth = 8;
+            ctx.lineCap = "round";
+            connections.forEach(conn => {
+                const p1 = mapPt(nodes[conn[0]]);
+                const p2 = mapPt(nodes[conn[1]]);
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+            });
+
+            // Re-draw connection centers with highlighted thin inner path
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+            ctx.lineWidth = 1.5;
+            connections.forEach(conn => {
+                const p1 = mapPt(nodes[conn[0]]);
+                const p2 = mapPt(nodes[conn[1]]);
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+            });
+
+            // Draw Area Labels background styling
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "10px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText("BIKE / CAR PARKING BLOCKS (A, B & X)", 170 * scaleX, 70 * scaleY);
+            ctx.fillText("MOTOVERSE EXPERIENCE ENCLOSURE", 680 * scaleX, 40 * scaleY);
+
+            // Draw Navigation Route Thread overlay if a path exists
+            if (currentRoutePath && currentRoutePath.length > 0) {
+                ctx.strokeStyle = activeTab === 'parking' ? "#f97316" : "#22d3ee";
+                ctx.shadowColor = activeTab === 'parking' ? "rgba(249, 115, 22, 0.8)" : "rgba(34, 211, 238, 0.8)";
+                ctx.shadowBlur = 10;
+                ctx.lineWidth = 4;
+                ctx.lineJoin = "round";
+
+                ctx.beginPath();
+                const startPt = mapPt(nodes[currentRoutePath[0]]);
+                ctx.moveTo(startPt.x, startPt.y);
+                
+                for (let i = 1; i < currentRoutePath.length; i++) {
+                    const pt = mapPt(nodes[currentRoutePath[i]]);
+                    ctx.lineTo(pt.x, pt.y);
+                }
+                ctx.stroke();
+
+                // Draw pulsing dynamic flow arrows over the active route
+                ctx.shadowBlur = 0; // reset
+                ctx.fillStyle = "#ffffff";
+                const cycle = Math.floor(Date.now() / 250) % 10;
+                for (let i = 0; i < currentRoutePath.length - 1; i++) {
+                    const p1 = mapPt(nodes[currentRoutePath[i]]);
+                    const p2 = mapPt(nodes[currentRoutePath[i+1]]);
+                    const dx = p2.x - p1.x;
+                    const dy = p2.y - p1.y;
+                    const len = Math.sqrt(dx*dx + dy*dy);
+                    
+                    // Draw moving dot indicators
+                    const ratio = ((cycle / 10) + (i / currentRoutePath.length)) % 1.0;
+                    const dotX = p1.x + dx * ratio;
+                    const dotY = p1.y + dy * ratio;
+                    
+                    ctx.beginPath();
+                    ctx.arc(dotX, dotY, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = activeTab === 'parking' ? "#ffb37c" : "#99f6e4";
+                    ctx.fill();
+                }
+            }
+
+            // Draw Nodes and Anchors (QR Stands, Entrance, Stalls)
+            Object.keys(nodes).forEach(key => {
+                const node = nodes[key];
+                const pt = mapPt(node);
+                const isHovered = hoveredNodeId === key;
+
+                if (node.isParking) {
+                    // Draw QR code stands - GREEN
+                    ctx.fillStyle = isHovered ? "#22c55e" : "#16a34a";
+                    ctx.beginPath();
+                    ctx.rect(pt.x - 8, pt.y - 8, 16, 16);
+                    ctx.fill();
+                    ctx.strokeStyle = "#ffffff";
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    // Mini QR cross indicator inside
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(pt.x - 4, pt.y - 4, 3, 3);
+                    ctx.fillRect(pt.x + 1, pt.y + 1, 3, 3);
+
+                    // If registered, paint an additional motorcycle ring
+                    if (registeredVehiclePos && registeredVehicleCode === node.slotCode) {
+                        ctx.strokeStyle = "#f97316";
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(pt.x, pt.y, 14, 0, Math.PI*2);
+                        ctx.stroke();
+                        
+                        ctx.fillStyle = "#f97316";
+                        ctx.font = "bold 9px monospace";
+                        ctx.fillText("MY BIKE HERE", pt.x, pt.y - 18);
+                    }
+                } else if (node.isStall) {
+                    // Draw Exhibition Enclosure Stalls - PURPLE / PINK
+                    ctx.fillStyle = isHovered ? "#a855f7" : "#7c3aed";
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 10, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+
+                    // Star polygon or cross inside target stall
+                    ctx.fillStyle = "#ffffff";
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 4, 0, Math.PI*2);
+                    ctx.fill();
+                } else {
+                    // Waypoint hubs & intersection junctions
+                    ctx.fillStyle = isHovered ? "#64748b" : "#475569";
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Node text Labels (only shows if hovered or important)
+                if (isHovered || node.isWaypoint || (node.isStall && key === destinationNodeId)) {
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "bold 9px monospace";
+                    ctx.shadowColor = "#000000";
+                    ctx.shadowBlur = 4;
+                    ctx.fillText(node.name, pt.x, pt.y - 15);
+                    ctx.shadowBlur = 0; // reset
+                }
+            });
+
+            // Draw Simulated User Location Pointer Beacon - BLUE
+            const userPixelPos = mapPt(currentUserPos);
+            ctx.shadowColor = "rgba(6, 182, 212, 0.8)";
+            ctx.shadowBlur = 12;
+            ctx.fillStyle = "#06b6d4";
+            ctx.beginPath();
+            ctx.arc(userPixelPos.x, userPixelPos.y, 7, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Ring
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Draw small avatar direction triangle pointer on User position
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.moveTo(userPixelPos.x, userPixelPos.y - 12);
+            ctx.lineTo(userPixelPos.x - 4, userPixelPos.y - 7);
+            ctx.lineTo(userPixelPos.x + 4, userPixelPos.y - 7);
+            ctx.closePath();
+            ctx.fill();
+
+            // Render loop request to keep animation moving smoothly (for flow arrows)
+            requestAnimationFrame(drawMap);
+        }
+
+        function onCanvasMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            // Convert to scale 1000 x 600 coordinate representation
+            const scaleX = 1000 / rect.width;
+            const scaleY = 600 / rect.height;
+            
+            const mouseX = (e.clientX - rect.left) * scaleX;
+            const mouseY = (e.clientY - rect.top) * scaleY;
+
+            // Detect hover target proximity
+            let hitNodeId = null;
+            Object.keys(nodes).forEach(key => {
+                const node = nodes[key];
+                const dx = node.x - mouseX;
+                const dy = node.y - mouseY;
+                const d = Math.sqrt(dx*dx + dy*dy);
+                if (d < 22) { // 22 virtual units hit radius
+                    hitNodeId = key;
+                }
+            });
+
+            if (hitNodeId !== hoveredNodeId) {
+                hoveredNodeId = hitNodeId;
+                if (hoveredNodeId) {
+                    playTone(600, 'sine', 0.05);
+                }
+            }
+        }
+
+        function onCanvasClick(e) {
+            if (isSimulatingWalk) return; // Prevent double trigger during path walk
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = 1000 / rect.width;
+            const scaleY = 600 / rect.height;
+            
+            const clickX = (e.clientX - rect.left) * scaleX;
+            const clickY = (e.clientY - rect.top) * scaleY;
+
+            // Check if clicked directly on a registered parking Node QR
+            let clickedNodeId = null;
+            Object.keys(nodes).forEach(key => {
+                const node = nodes[key];
+                const dx = node.x - clickX;
+                const dy = node.y - clickY;
+                const d = Math.sqrt(dx*dx + dy*dy);
+                if (d < 25) {
+                    clickedNodeId = key;
+                }
+            });
+
+            if (clickedNodeId) {
+                const nodeObj = nodes[clickedNodeId];
+                if (nodeObj.isParking && activeTab === 'parking') {
+                    // Open QR Scanner Modal Viewfinder
+                    openQrModal(clickedNodeId);
+                    return;
+                }
+                
+                if (nodeObj.isStall && activeTab === 'indoor') {
+                    destinationNodeId = clickedNodeId;
+                    document.getElementById("stallSelect").value = clickedNodeId;
+                    updateNavigationRoute();
+                    document.getElementById("consoleFeed").innerText = `Destination set to: ${nodeObj.name}`;
+                    playTone(700, 'triangle', 0.1);
+                    return;
+                }
+            }
+
+            // Otherwise, move current User Location Pin to closest point clicked on the walkways
+            const closestNodeId = findClosestNodeId(clickX, clickY);
+            const targetNode = nodes[closestNodeId];
+            
+            currentUserPos = { x: targetNode.x, y: targetNode.y };
+            updateNavigationRoute();
+            
+            document.getElementById("consoleFeed").innerText = `Set current position closest node: ${targetNode.name}`;
+            playTone(450, 'sine', 0.08);
+        }
+
+        function generateFakeQrMatrix() {
+            const parent = document.getElementById("simulatedQrCode");
+            parent.innerHTML = "";
+            for (let i = 0; i < 36; i++) {
+                const block = document.createElement("div");
+                // Create random checker pattern
+                const isBlack = Math.random() > 0.4 || (i % 6 === 0) || (i < 6);
+                block.className = isBlack ? "bg-slate-900 rounded-sm" : "bg-white rounded-sm";
+                parent.appendChild(block);
+            }
+        }
+
+        let pendingParkingNodeId = null;
+        function openQrModal(nodeId) {
+            pendingParkingNodeId = nodeId;
+            const node = nodes[nodeId];
+            
+            document.getElementById("modalStallId").innerText = node.slotCode;
+            document.getElementById("modalStallCoords").innerText = `Lat ${Math.round(node.y * 100) / 1000}° N, Lon ${Math.round(node.x * 100) / 1000}° E`;
+            
+            generateFakeQrMatrix();
+            document.getElementById("qrScannerModal").classList.remove("hidden");
+            playTone(900, 'sawtooth', 0.12);
+        }
+
+        function closeQrModal() {
+            document.getElementById("qrScannerModal").classList.add("hidden");
+            pendingParkingNodeId = null;
+        }
+
+        function confirmQrPairing() {
+            if (!pendingParkingNodeId) return;
+            const node = nodes[pendingParkingNodeId];
+            
+            registeredVehiclePos = { x: node.x, y: node.y };
+            registeredVehicleCode = node.slotCode;
+
+            document.getElementById("parkingSpotLabel").innerText = node.slotCode;
+            document.getElementById("consoleFeed").innerText = `Successfully locked parking coordinates for ${node.slotCode} inside RE App!`;
+            
+            triggerScanBeep();
+            closeQrModal();
+            updateNavigationRoute();
+            drawMap();
+        }
+
+        function startWalkSimulation() {
+            if (currentRoutePath.length === 0 || isSimulatingWalk) return;
+
+            isSimulatingWalk = true;
+            walkProgress = 0;
+            animateStepsCount = 0;
+            document.getElementById("telemetryAction").innerText = "WALKING";
+            
+            document.getElementById("btnWalkToBike").disabled = true;
+            document.getElementById("btnNavigateStall").disabled = true;
+
+            const pathNodeObjects = currentRoutePath.map(id => nodes[id]);
+            let currentPathSegmentIdx = 0;
+            
+            // Loop step sequencer
+            walkInterval = setInterval(() => {
+                if (currentPathSegmentIdx >= pathNodeObjects.length - 1) {
+                    // Completed Walk Route
+                    clearInterval(walkInterval);
+                    isSimulatingWalk = false;
+                    document.getElementById("telemetryAction").innerText = "ARRIVED";
+                    document.getElementById("walkProgressText").innerText = "DESTINATION REACHED";
+                    document.getElementById("walkProgressBar").style.width = "100%";
+                    
+                    // Put user directly at destination
+                    const lastNode = pathNodeObjects[pathNodeObjects.length - 1];
+                    currentUserPos = { x: lastNode.x, y: lastNode.y };
+
+                    // Enable buttons back
+                    document.getElementById("btnWalkToBike").disabled = false;
+                    document.getElementById("btnNavigateStall").disabled = false;
+                    
+                    // Success fanfare
+                    playTone(523, 'sine', 0.15);
+                    setTimeout(() => playTone(659, 'sine', 0.15), 150);
+                    setTimeout(() => playTone(783, 'sine', 0.3), 300);
+                    
+                    document.getElementById("consoleFeed").innerText = `Arrived safely at ${lastNode.name}! GPS Tracking complete.`;
+                    
+                    // Clear route to avoid visual clutter
+                    currentRoutePath = [];
+                    updateNavigationRoute();
+                    drawMap();
+                    return;
+                }
+
+                // Move user coordinate incrementally between route nodes
+                const startNode = pathNodeObjects[currentPathSegmentIdx];
+                const endNode = pathNodeObjects[currentPathSegmentIdx + 1];
+
+                // Sound simulation for pacing
+                animateStepsCount++;
+                document.getElementById("telemetrySteps").innerText = animateStepsCount;
+                
+                // Toggle footsteps sound pitch slightly
+                triggerFootstepSound(animateStepsCount % 2 === 0 ? 190 : 220);
+
+                // Simulate compass heading directions based on travel vector
+                const angleRad = Math.atan2(endNode.y - startNode.y, endNode.x - startNode.x);
+                let degrees = Math.round(angleRad * (180 / Math.PI));
+                if (degrees < 0) degrees += 360;
+                document.getElementById("telemetryHeading").innerText = `${degrees}°`;
+
+                // Update instruction prompt based on current junction node destination
+                document.getElementById("hudDirectionText").innerText = `Proceeding along walkway corridor to ${endNode.name}...`;
+
+                // Step position update
+                currentUserPos.x = endNode.x;
+                currentUserPos.y = endNode.y;
+                
+                // Track progress
+                currentPathSegmentIdx++;
+                const percentage = Math.round((currentPathSegmentIdx / (pathNodeObjects.length - 1)) * 100);
+                document.getElementById("walkProgressText").innerText = `PROGRESS: ${percentage}%`;
+                document.getElementById("walkProgressBar").style.width = `${percentage}%`;
+
+            }, 850); // Walk pacing interval speed
+        }
+
+        // Demo initializer
+        function initSampleRoute() {
+            // Preset user at main gate, target as Custom Shed
+            currentUserPos = { x: nodes.entrance.x, y: nodes.entrance.y };
+            destinationNodeId = "stall_custom_shed";
+            document.getElementById("stallSelect").value = "stall_custom_shed";
+            
+            // Also preset a mock parked vehicle so both indicators exist
+            registeredVehiclePos = { x: nodes.park_bike_b.x, y: nodes.park_bike_b.y };
+            registeredVehicleCode = nodes.park_bike_b.slotCode;
+            document.getElementById("parkingSpotLabel").innerText = nodes.park_bike_b.slotCode;
+
+            updateNavigationRoute();
+            drawMap();
+            document.getElementById("consoleFeed").innerText = "Demo Route Preloaded. Press Plot Path / Walk to begin.";
+            playTone(500, 'triangle', 0.2);
+        }
+
+        // Reset map to initial state
+        function resetSimulationState() {
+            if (walkInterval) clearInterval(walkInterval);
+            isSimulatingWalk = false;
+            currentUserPos = { x: 120, y: 520 };
+            registeredVehiclePos = null;
+            registeredVehicleCode = "";
+            currentRoutePath = [];
+            
+            document.getElementById("parkingSpotLabel").innerText = "NOT RECORDED";
+            document.getElementById("parkingDistLabel").innerText = "-- meters";
+            document.getElementById("telemetrySteps").innerText = "0";
+            document.getElementById("telemetryAction").innerText = "IDLE";
+            document.getElementById("telemetryHeading").innerText = "--° N";
+            document.getElementById("walkProgressText").innerText = "READY TO COMMENCE";
+            document.getElementById("walkProgressBar").style.width = "0%";
+            document.getElementById("btnWalkToBike").disabled = true;
+            document.getElementById("btnWalkToBike").className = "w-full py-3 bg-slate-800 text-slate-500 cursor-not-allowed rounded-xl font-bold font-mono text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2";
+            
+            updateNavigationRoute();
+            drawMap();
+            document.getElementById("consoleFeed").innerText = "Reset complete. All registered GPS points flushed.";
+            playTone(300, 'sine', 0.2);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" style="height:100%;overflow:hidden;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE Motoverse - Navigation Arena Activation Hub</title>
+    <!-- Tailwind CSS for modern layouts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syncopate:wght@400;700&display=swap');
+        
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #040711;
+        }
+        
+        .syncopate {
+            font-family: 'Syncopate', sans-serif;
+        }
+
+        /* Scanline grid overlay */
+        .cyber-grid {
+            background: linear-gradient(
+                rgba(18, 24, 38, 0) 50%, 
+                rgba(0, 0, 0, 0.4) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(249, 115, 22, 0.03) 0%,
+                rgba(0, 0, 0, 0) 8%
+            );
+            background-size: 100% 4px, 16px 100%;
+        }
+
+        /* Glassmorphism containers */
+        .glass-container {
+            background: rgba(8, 12, 28, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        /* Glowing text elements */
+        .neon-text-orange {
+            text-shadow: 0 0 10px rgba(249, 115, 22, 0.6);
+        }
+        .neon-text-cyan {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.6);
+        }
+
+        /* Range sliders */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #1e293b;
+            border-radius: 9999px;
+            height: 6px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #f97316;
+            cursor: pointer;
+            box-shadow: 0 0 8px #f97316;
+            transition: transform 0.1s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Hide scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050814;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f97316;
+        }
+    </style>
+</head>
+<body class="text-slate-100 flex flex-col relative cyber-grid" style="height:100%;">
+
+    <!-- HEADER AND BRANDING -->
+    <header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur-md px-6 py-4 z-20 flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center gap-4">
+            <div class="p-2.5 bg-orange-500/10 border border-orange-500/30 rounded-xl">
+                <i data-lucide="navigation" class="w-6 h-6 text-orange-500 animate-pulse"></i>
+            </div>
+            <div>
+                <h1 class="text-lg md:text-xl font-bold tracking-widest text-slate-100 uppercase syncopate">
+                    RE <span class="text-orange-500">NAV-ARENA</span> // BOOTH ACTIVATIONS
+                </h1>
+                <p class="text-[10px] text-slate-400 tracking-wider font-mono uppercase">Interactive Gamified Simulator & Live SDK Demonstration Console</p>
+            </div>
+        </div>
+
+        <!-- Global Controls: Sound and Mode -->
+        <div class="flex flex-wrap items-center gap-3">
+            <button id="soundToggleBtn" onclick="toggleArenaAudio()" class="px-4 py-2 border border-slate-800 bg-slate-900/60 rounded-xl hover:border-orange-500/40 hover:text-orange-400 transition-all duration-200 flex items-center gap-2 text-xs font-mono">
+                <i data-lucide="volume-2" id="soundIcon" class="w-4 h-4 text-orange-500"></i>
+                <span id="soundLabel">SOUNDS: ACTIVE</span>
+            </button>
+            <div class="text-xs bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-2 rounded-xl font-mono flex items-center gap-1.5 shadow-lg shadow-emerald-950/20">
+                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span>
+                <span>STALL DISPLAY READY</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ACTIVITY SELECTOR TABS -->
+    <section class="bg-slate-950/60 border-b border-slate-800/60 p-2 z-10">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-2">
+            <button onclick="switchTab('trial')" id="tab-trial" class="flex items-center gap-3 p-3 rounded-xl transition-all font-mono text-left border border-orange-500 bg-orange-500/10">
+                <div class="p-2 bg-orange-500/20 rounded-lg text-orange-400">
+                    <i data-lucide="zap" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="text-xs font-semibold tracking-wider text-slate-200">ACTIVITY 1: "BLIND NAV"</div>
+                    <div class="text-[10px] text-slate-400">Time Trial Re-routing Challenge</div>
+                </div>
+            </button>
+
+            <button onclick="switchTab('hunt')" id="tab-hunt" class="flex items-center gap-3 p-3 rounded-xl transition-all font-mono text-left border border-slate-800 hover:bg-slate-900/50">
+                <div class="p-2 bg-cyan-500/10 rounded-lg text-cyan-400">
+                    <i data-lucide="compass" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="text-xs font-semibold tracking-wider text-slate-300">ACTIVITY 2: SCAVENGER HUNT</div>
+                    <div class="text-[10px] text-slate-400">Interactive Venue Checklist GPS Loop</div>
+                </div>
+            </button>
+
+            <button onclick="switchTab('eta')" id="tab-eta" class="flex items-center gap-3 p-3 rounded-xl transition-all font-mono text-left border border-slate-800 hover:bg-slate-900/50">
+                <div class="p-2 bg-purple-500/10 rounded-lg text-purple-400">
+                    <i data-lucide="timer" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="text-xs font-semibold tracking-wider text-slate-300">ACTIVITY 3: "PREDICT THE ETA"</div>
+                    <div class="text-[10px] text-slate-400">ML Traffic Intuition Challenge</div>
+                </div>
+            </button>
+        </div>
+    </section>
+
+    <!-- MAIN INTERACTIVE CONTAINER -->
+    <main class="flex flex-row relative" style="flex:1 1 0%;min-height:0;overflow:hidden;">
+
+        <!-- LEFT CONTROL BOARD: Dynamic depending on tab selection -->
+        <aside class="w-[380px] border-r border-slate-800 bg-slate-950/95 backdrop-blur-md p-5 flex flex-col gap-5 z-10 shrink-0 overflow-y-auto" style="max-height:100%;">
+            
+            <!-- PANEL 1: "BLIND NAV" TIME TRIAL CONTROLS -->
+            <div id="panel-trial" class="flex flex-col gap-4">
+                <div class="border-b border-slate-800 pb-3">
+                    <span class="px-2 py-0.5 text-[9px] bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded font-mono">BOOTH GAME</span>
+                    <h2 class="text-lg font-bold text-slate-100 mt-1.5 font-mono">"BLIND NAV" TIME TRIAL</h2>
+                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Simulates real-world SDK re-routing on tablet. When a sudden roadblock hits, re-route instantly to beat the clock!</p>
+                </div>
+
+                <!-- Live Game Status Dashboard -->
+                <div class="bg-slate-900/40 border border-slate-850 p-4 rounded-xl space-y-3">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <span class="text-slate-400">Current Trip Score:</span>
+                        <span id="trialScoreLabel" class="text-orange-400 font-bold text-sm">1,000 pts</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <span class="text-slate-400">Reroute Countdown:</span>
+                        <span id="trialTimerLabel" class="text-red-400 font-bold font-mono animate-pulse">0.0s</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <span class="text-slate-400">Simulated Progress:</span>
+                        <span id="trialProgressLabel" class="text-cyan-400">0%</span>
+                    </div>
+                    <!-- Reaction Time Progress Bar -->
+                    <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+                        <div id="trialTimerBar" class="bg-red-500 h-full w-full transition-all duration-100"></div>
+                    </div>
+                </div>
+
+                <!-- Admin Action Triggers -->
+                <div class="bg-slate-900/30 border border-slate-850 p-4 rounded-xl space-y-3">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest block">ADMIN SIMULATOR INJECTORS</span>
+                    <button id="btnStartTrial" onclick="startTrialGame()" class="w-full py-3 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-xs rounded-xl font-mono transition-all flex items-center justify-center gap-2 shadow-lg shadow-orange-950/20">
+                        <i data-lucide="play-circle" class="w-4 h-4"></i>
+                        START SIMULATION RUN
+                    </button>
+                    <button id="btnInjectHazard" onclick="injectRoadblock()" class="w-full py-2.5 bg-red-950/20 hover:bg-red-900/30 text-red-400 border border-red-900/30 font-bold text-xs rounded-xl font-mono transition-all flex items-center justify-center gap-2" disabled>
+                        <i data-lucide="shield-alert" class="w-4 h-4"></i>
+                        INJECT ROADBLOCK NOW!
+                    </button>
+                </div>
+
+                <div class="text-[11px] text-slate-400 font-mono bg-slate-900/20 p-3 rounded-lg border border-slate-800">
+                    <span class="text-orange-400 font-semibold block mb-1">🎮 Game Mechanics:</span>
+                    When the roadblock flashes, click/tap one of the highlighted <span class="text-cyan-400 font-bold">detour options</span> on the canvas within 10 seconds. Fastest reaction score wins the Master Navigator award!
+                </div>
+            </div>
+
+            <!-- PANEL 2: VENUE SCAVENGER HUNT CONTROLS -->
+            <div id="panel-hunt" class="flex flex-col gap-4 hidden">
+                <div class="border-b border-slate-800 pb-3">
+                    <span class="px-2 py-0.5 text-[9px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded font-mono">STALL FOOT TRAFFIC</span>
+                    <h2 class="text-lg font-bold text-slate-100 mt-1.5 font-mono">MOTOVERSE HUNT</h2>
+                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Send visitors to find waypoint coordinates across the festival venue, scanning QRs to unlock rewards.</p>
+                </div>
+
+                <!-- Hunt Checkpoint List -->
+                <div class="bg-slate-900/40 border border-slate-850 p-4 rounded-xl space-y-3">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest block">CHECKPOINT TIMELINE</span>
+                    
+                    <div class="space-y-2">
+                        <!-- Checkpoint 1 -->
+                        <div id="chk1" class="flex items-center justify-between p-2.5 bg-slate-950/40 rounded-lg border border-slate-800 transition-all">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 flex items-center justify-center rounded-full bg-cyan-500/20 text-cyan-400 text-[10px] font-mono">1</span>
+                                <div class="text-xs">
+                                    <div class="font-bold text-slate-200">Checkpoint A: Custom Garage</div>
+                                    <div class="text-[9px] text-slate-400 font-mono">Vagator Sector 3</div>
+                                </div>
+                            </div>
+                            <span id="chk1-status" class="text-[10px] font-mono text-amber-500">Pending</span>
+                        </div>
+
+                        <!-- Checkpoint 2 -->
+                        <div id="chk2" class="flex items-center justify-between p-2.5 bg-slate-950/40 rounded-lg border border-slate-800 transition-all opacity-50">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono">2</span>
+                                <div class="text-xs">
+                                    <div class="font-bold text-slate-300">Checkpoint B: Dirt Track Arena</div>
+                                    <div class="text-[9px] text-slate-400 font-mono">Vagator Sector 7</div>
+                                </div>
+                            </div>
+                            <span id="chk2-status" class="text-[10px] font-mono text-slate-500">Locked</span>
+                        </div>
+
+                        <!-- Checkpoint 3 -->
+                        <div id="chk3" class="flex items-center justify-between p-2.5 bg-slate-950/40 rounded-lg border border-slate-800 transition-all opacity-50">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono">3</span>
+                                <div class="text-xs">
+                                    <div class="font-bold text-slate-300">Checkpoint C: Hilltop Stage</div>
+                                    <div class="text-[9px] text-slate-400 font-mono">Vagator Sector 1</div>
+                                </div>
+                            </div>
+                            <span id="chk3-status" class="text-[10px] font-mono text-slate-500">Locked</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation Tools -->
+                <div class="bg-slate-900/30 border border-slate-850 p-4 rounded-xl space-y-3">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest block">WAYPOINT ACTIONS</span>
+                    <button onclick="startScavengerHunt()" id="btnStartHunt" class="w-full py-2.5 bg-cyan-950/30 hover:bg-cyan-950/60 text-cyan-400 border border-cyan-500/30 font-bold text-xs rounded-xl font-mono transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="compass" class="w-4 h-4"></i>
+                        RESET SCAVENGER HUNT
+                    </button>
+                    <button onclick="mockScanQR()" id="btnScanQR" class="w-full py-2.5 bg-emerald-950/40 hover:bg-emerald-900/30 text-emerald-400 border border-emerald-500/30 font-bold text-xs rounded-xl font-mono transition-all flex items-center justify-center gap-2 cursor-pointer" disabled>
+                        <i data-lucide="qr-code" class="w-4 h-4"></i>
+                        SIMULATE SCANNING QR CODE
+                    </button>
+                </div>
+            </div>
+
+            <!-- PANEL 3: "PREDICT THE ETA" CHALLENGE CONTROLS -->
+            <div id="panel-eta" class="flex flex-col gap-4 hidden">
+                <div class="border-b border-slate-800 pb-3">
+                    <span class="px-2 py-0.5 text-[9px] bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded font-mono">ENGAGING TRAFFIC SDK</span>
+                    <h2 class="text-lg font-bold text-slate-100 mt-1.5 font-mono">PREDICT THE ETA</h2>
+                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Crack chaotic traffic algorithms. Review the real-time congestion heat map on canvas and submit your travel prediction!</p>
+                </div>
+
+                <!-- Active Route Specs -->
+                <div class="bg-slate-900/40 border border-slate-850 p-3.5 rounded-xl space-y-2 text-xs font-mono">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Current City Map:</span>
+                        <span class="text-slate-200">Downtown Mumbai Grid</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Total Distance:</span>
+                        <span class="text-slate-200">12.8 Kilometers</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Base Speed Limit:</span>
+                        <span class="text-slate-200">50 km/h</span>
+                    </div>
+                </div>
+
+                <!-- Interactive User Prediction Entry -->
+                <div class="bg-slate-900/30 border border-slate-850 p-4 rounded-xl space-y-4">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <span class="text-slate-400">Your Travel Time Guess:</span>
+                        <span class="text-purple-400 font-bold text-sm" id="userGuessLabel">25 minutes</span>
+                    </div>
+                    <input type="range" id="etaSlider" min="15" max="60" value="25" class="w-full accent-purple-500" oninput="updateGuessSlider(this.value)">
+
+                    <button onclick="submitEtaChallenge()" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl font-mono transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-950/20">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        LOCK IN & CALCULATE DELTA
+                    </button>
+                </div>
+
+                <!-- Live Results Comparison Display -->
+                <div id="etaResultsBoard" class="bg-slate-900/50 border border-slate-800 p-4 rounded-xl space-y-2.5 hidden">
+                    <div class="text-xs font-mono font-bold text-slate-300 border-b border-slate-800 pb-1.5 uppercase tracking-wider">CHALLENGE ANALYSIS</div>
+                    <div class="flex justify-between text-xs font-mono">
+                        <span class="text-slate-400">Your Estimate:</span>
+                        <span id="labelUserEstimate" class="text-purple-300 font-bold">-- mins</span>
+                    </div>
+                    <div class="flex justify-between text-xs font-mono">
+                        <span class="text-slate-400">SDK ML Prediction:</span>
+                        <span id="labelSdkEstimate" class="text-emerald-400 font-bold">-- mins</span>
+                    </div>
+                    <div class="flex justify-between text-xs font-mono border-t border-slate-850 pt-2">
+                        <span class="text-slate-300 font-semibold">Variance Delta:</span>
+                        <span id="labelVarianceDelta" class="text-amber-400 font-bold">-- mins</span>
+                    </div>
+                    <div id="rewardStatusBadge" class="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-center text-[11px] font-mono font-semibold mt-1">
+                        --
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIVE LEADERBOARD / LEADER FEED -->
+            <div class="mt-auto bg-slate-900/20 border border-slate-850 p-4 rounded-xl space-y-3">
+                <div class="flex justify-between items-center text-[10px] font-mono text-slate-400 border-b border-slate-850 pb-2">
+                    <span>LIVE STANDINGS</span>
+                    <span class="text-emerald-400 animate-pulse font-bold">● ONLINE FEED</span>
+                </div>
+                <div class="space-y-2 text-[11px] font-mono text-slate-300">
+                    <div class="flex justify-between">
+                        <span>1. Vikram S. (Himalayan 450)</span>
+                        <span class="text-orange-400 font-semibold">982 pts</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>2. Sneha R. (Interceptor 650)</span>
+                        <span class="text-orange-400 font-semibold">954 pts</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>3. Daniel K. (Continental GT)</span>
+                        <span class="text-orange-400 font-semibold">910 pts</span>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- CENTER SCREEN: INTERACTIVE DISPLAY CORE -->
+        <section class="flex flex-col relative bg-slate-950 p-4 overflow-hidden" style="flex:1 1 0%;min-height:0;">
+            
+            <!-- Compact mode indicator — top-right, non-intrusive -->
+            <div class="absolute top-3 right-3 z-10 glass-container px-3 py-1.5 rounded-xl border border-slate-800 flex items-center gap-2 text-[10px] font-mono pointer-events-none">
+                <span class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                <span class="text-slate-400">MODE:</span>
+                <span id="canvasModeLabel" class="text-orange-400 font-bold uppercase">Time Trial</span>
+            </div>
+
+            <!-- Simulation Canvas Area -->
+            <div class="flex-grow relative rounded-2xl border border-slate-800 bg-[#05070e] overflow-hidden group flex items-center justify-center">
+                <!-- Flashing hazard overlay for alert states -->
+                <div id="hazardWarningOverlay" class="absolute inset-0 bg-red-950/20 pointer-events-none hidden flex-col items-center justify-center border-4 border-red-500 animate-pulse z-10">
+                    <i data-lucide="shield-alert" class="w-16 h-16 text-red-500 mb-2 animate-bounce"></i>
+                    <span class="font-mono text-lg font-bold text-red-400 tracking-widest uppercase text-center">
+                        ⚠️ DANGER DETECTED // ROADBLOCK AHEAD!<br>
+                        <span class="text-xs text-slate-300">Click a fast detour on the canvas now!</span>
+                    </span>
+                </div>
+
+                <canvas id="arenaCanvas" class="block w-full h-full cursor-pointer"></canvas>
+            </div>
+
+            <!-- BOTTOM CONSOLE STATUS BAR -->
+            <div class="mt-4 glass-container border border-slate-800 rounded-xl p-3 flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-mono">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span class="text-slate-400">CONSOLE FEED:</span>
+                    <span id="systemFeedback" class="text-slate-200">Arena interactive activation initialized. Welcome to Motoverse!</span>
+                </div>
+                <div class="flex gap-2">
+                    <button class="px-3.5 py-1.5 bg-slate-900 border border-slate-800 rounded-lg hover:border-orange-500/30 hover:text-orange-400 transition-all text-[11px]" onclick="resetCurrentGame()">
+                        Reset Active Game
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- HIGH VISIBILITY TOAST CONTAINER -->
+    <div id="gameToast" class="fixed bottom-6 left-6 glass-container border border-orange-500/40 p-4 rounded-xl shadow-xl shadow-orange-950/20 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none max-w-sm">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-orange-500/10 rounded-lg text-orange-400">
+                <i data-lucide="award" class="w-5 h-5" id="toastIcon"></i>
+            </div>
+            <div>
+                <h4 class="font-mono text-xs font-bold text-slate-200" id="toastTitle">NAVIGATOR UPDATE</h4>
+                <p id="toastMessage" class="text-[11px] text-slate-400 font-mono">Event system updated.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- WEB AUDIO SYNTHESIZER SCRIPT -->
+    <script>
+        let audioCtx = null;
+        let soundActive = true;
+
+        function toggleArenaAudio() {
+            soundActive = !soundActive;
+            const btn = document.getElementById("soundToggleBtn");
+            const icon = document.getElementById("soundIcon");
+            const label = document.getElementById("soundLabel");
+
+            if (soundActive) {
+                btn.className = "px-4 py-2 border border-slate-800 bg-slate-900/60 rounded-xl hover:border-orange-500/40 hover:text-orange-400 transition-all duration-200 flex items-center gap-2 text-xs font-mono";
+                label.innerText = "SOUNDS: ACTIVE";
+                icon.setAttribute("data-lucide", "volume-2");
+                playAudioTone(523, 'sine', 0.1);
+            } else {
+                btn.className = "px-4 py-2 border border-slate-800 bg-slate-900/10 rounded-xl text-slate-500 transition-all duration-200 flex items-center gap-2 text-xs font-mono";
+                label.innerText = "SOUNDS: MUTED";
+                icon.setAttribute("data-lucide", "volume-x");
+            }
+            lucide.createIcons();
+        }
+
+        function playAudioTone(freq, type, duration) {
+            if (!soundActive) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = type || 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {
+                console.log("Web audio context loaded on interaction.");
+            }
+        }
+
+        function playAlarmSiren() {
+            if (!soundActive) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(320, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } catch(e) {}
+        }
+
+        function playRumbleTone(frequency) {
+            if (!soundActive) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.15);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.15);
+            } catch(e) {}
+        }
+
+        function playChimeMajor() {
+            playAudioTone(523, 'sine', 0.1);
+            setTimeout(() => playAudioTone(659, 'sine', 0.1), 100);
+            setTimeout(() => playAudioTone(783, 'sine', 0.2), 200);
+        }
+    </script>
+
+    <!-- CORE INTERACTIVE ENGINE SCRIPT -->
+    <script>
+        let canvas, ctx;
+        let activeTab = 'trial'; // 'trial', 'hunt', 'eta'
+        
+        // --- 1. TIME TRIAL ("BLIND NAV") VARIABLES ---
+        let trialGameActive = false;
+        let trialScore = 1000;
+        let trialTimer = 10.0;
+        let trialTimerMax = 10.0;
+        let trialProgress = 0.0;
+        let trialHazardActive = false;
+        let timerInterval = null;
+        let travelSpeed = 0.002;
+        let currentRouteBranch = 'primary'; // 'primary', 'detourA', 'detourB'
+        
+        // Nodes recomputed from canvas size in handleResize()
+        let trialNodes = {
+            start: { x: 0, y: 0 }, hazardPoint: { x: 0, y: 0 }, destination: { x: 0, y: 0 },
+            detourANode: { x: 0, y: 0 }, detourBNode: { x: 0, y: 0 }
+        };
+
+        // --- 2. SCAVENGER HUNT VARIABLES ---
+        let currentCheckPointNum = 0; // 0: Not started, 1: Checkpoint A unlocked, etc.
+        let huntRiderPos = { x: 120, y: 480 };
+        let huntTargetPos = { x: 120, y: 480 };
+        let pointsUnlocked = { A: false, B: false, C: false };
+        let huntPoints = [
+            { id: 'A', name: 'Checkpoint A: Custom Garage', x: 250, y: 150, locked: false },
+            { id: 'B', name: 'Checkpoint B: Dirt Track Arena', x: 550, y: 220, locked: true },
+            { id: 'C', name: 'Checkpoint C: Hilltop Stage', x: 450, y: 450, locked: true }
+        ];
+
+        // --- 3. ETA PREDICTION VARIABLES ---
+        let currentEtaGuess = 25;
+        let calculatedSdkEta = 31; // procedural target
+        let deltaDifference = 0;
+        let isSweepingEta = false;
+        let etaSweepCounter = 0;
+        let etaGridOffset = 0;
+
+        // Initialize App on load
+        window.onload = function() {
+            lucide.createIcons();
+            canvas = document.getElementById("arenaCanvas");
+            ctx = canvas.getContext("2d");
+
+            window.addEventListener("resize", handleResize);
+            canvas.addEventListener("click", handleCanvasClick);
+            canvas.addEventListener("mousemove", handleCanvasMouseMove);
+            handleResize();
+            requestAnimationFrame(() => { handleResize(); });
+
+            // Populate system indicators
+            updateGuessSlider(25);
+
+            // Launch custom animation tick cycle
+            animateArena();
+        };
+
+        function handleResize() {
+            const container = canvas.parentElement;
+            canvas.width  = container.clientWidth  || window.innerWidth;
+            canvas.height = container.clientHeight || window.innerHeight;
+
+            // Recompute all canvas-relative node positions
+            trialNodes.start      = { x: Math.round(canvas.width * 0.12),  y: Math.round(canvas.height * 0.52) };
+            trialNodes.hazardPoint= { x: Math.round(canvas.width * 0.50),  y: Math.round(canvas.height * 0.52) };
+            trialNodes.destination= { x: Math.round(canvas.width * 0.88),  y: Math.round(canvas.height * 0.52) };
+            trialNodes.detourANode= { x: Math.round(canvas.width * 0.50),  y: Math.round(canvas.height * 0.22) };
+            trialNodes.detourBNode= { x: Math.round(canvas.width * 0.50),  y: Math.round(canvas.height * 0.82) };
+
+            huntPoints[0] = { id: 'A', name: 'Checkpoint A: Custom Garage',  x: Math.round(canvas.width * 0.32), y: Math.round(canvas.height * 0.28), locked: false };
+            huntPoints[1] = { id: 'B', name: 'Checkpoint B: Dirt Track Arena', x: Math.round(canvas.width * 0.72), y: Math.round(canvas.height * 0.42), locked: true  };
+            huntPoints[2] = { id: 'C', name: 'Checkpoint C: Hilltop Stage',  x: Math.round(canvas.width * 0.56), y: Math.round(canvas.height * 0.76), locked: true  };
+
+            drawActiveWorkspace();
+        }
+
+        function switchTab(tabId) {
+            activeTab = tabId;
+            
+            // Highlight active tab
+            ['trial', 'hunt', 'eta'].forEach(t => {
+                const element = document.getElementById(`tab-${t}`);
+                const panel = document.getElementById(`panel-${t}`);
+                if (t === tabId) {
+                    element.className = "flex items-center gap-3 p-3 rounded-xl transition-all font-mono text-left border border-orange-500 bg-orange-500/10";
+                    panel.classList.remove("hidden");
+                } else {
+                    element.className = "flex items-center gap-3 p-3 rounded-xl transition-all font-mono text-left border border-slate-800 hover:bg-slate-900/50";
+                    panel.classList.add("hidden");
+                }
+            });
+
+            // Set canvas overlay labels
+            const modeLabel = document.getElementById("canvasModeLabel");
+            if (tabId === 'trial') {
+                modeLabel.innerText = "Time Trial Re-routing";
+                modeLabel.className = "text-orange-400 font-bold uppercase";
+                document.getElementById("systemFeedback").innerText = "Blind Nav active. Press START SIMULATION RUN.";
+            } else if (tabId === 'hunt') {
+                modeLabel.innerText = "Venue Scavenger Hunt";
+                modeLabel.className = "text-cyan-400 font-bold uppercase";
+                document.getElementById("systemFeedback").innerText = "Follow checkpoints. Arrive at coordinates to scan QR codes.";
+            } else if (tabId === 'eta') {
+                modeLabel.innerText = "Predict the ETA";
+                modeLabel.className = "text-purple-400 font-bold uppercase";
+                document.getElementById("systemFeedback").innerText = "Review Mumbai high-traffic heat maps and submit prediction.";
+            }
+
+            resetCurrentGame();
+            playAudioTone(330, 'sine', 0.12);
+        }
+
+        // MASTER DRAWING TICK
+        function drawActiveWorkspace() {
+            if (!ctx) return;
+
+            // Clear to futuristic canvas color
+            ctx.fillStyle = "#05070e";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw technical crosshairs & background grids
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.02)";
+            ctx.lineWidth = 1;
+            for (let i = 40; i < canvas.width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            for (let j = 40; j < canvas.height; j += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, j);
+                ctx.lineTo(canvas.width, j);
+                ctx.stroke();
+            }
+
+            // Route execution dependent on Tab state
+            if (activeTab === 'trial') {
+                drawTimeTrialScene();
+            } else if (activeTab === 'hunt') {
+                drawScavengerHuntScene();
+            } else if (activeTab === 'eta') {
+                drawEtaChallengeScene();
+            }
+        }
+
+        // -------------------------------------------------------------
+        // ACTIVITY 1: TIME TRIAL SCENE RENDERER
+        // -------------------------------------------------------------
+        function drawTimeTrialScene() {
+            // Draw baseline lanes
+            ctx.lineWidth = 12;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+
+            // Primary direct highway route (Red alert if blocked)
+            ctx.strokeStyle = trialHazardActive ? "rgba(239, 68, 68, 0.2)" : "rgba(255, 255, 255, 0.06)";
+            ctx.beginPath();
+            ctx.moveTo(trialNodes.start.x, trialNodes.start.y);
+            ctx.lineTo(trialNodes.hazardPoint.x, trialNodes.hazardPoint.y);
+            ctx.lineTo(trialNodes.destination.x, trialNodes.destination.y);
+            ctx.stroke();
+
+            // Detour Route A (High road)
+            ctx.strokeStyle = (currentRouteBranch === 'detourA') ? "rgba(6, 182, 212, 0.4)" : "rgba(6, 182, 212, 0.08)";
+            if (trialHazardActive && currentRouteBranch === 'primary') {
+                ctx.strokeStyle = "rgba(6, 182, 212, 0.25)"; // Flashing detour prompt
+            }
+            ctx.beginPath();
+            ctx.moveTo(trialNodes.start.x, trialNodes.start.y);
+            ctx.lineTo(trialNodes.detourANode.x, trialNodes.detourANode.y);
+            ctx.lineTo(trialNodes.destination.x, trialNodes.destination.y);
+            ctx.stroke();
+
+            // Detour Route B (Low road)
+            ctx.strokeStyle = (currentRouteBranch === 'detourB') ? "rgba(249, 115, 22, 0.4)" : "rgba(249, 115, 22, 0.08)";
+            if (trialHazardActive && currentRouteBranch === 'primary') {
+                ctx.strokeStyle = "rgba(249, 115, 22, 0.25)"; // Flashing detour prompt
+            }
+            ctx.beginPath();
+            ctx.moveTo(trialNodes.start.x, trialNodes.start.y);
+            ctx.lineTo(trialNodes.detourBNode.x, trialNodes.detourBNode.y);
+            ctx.lineTo(trialNodes.destination.x, trialNodes.destination.y);
+            ctx.stroke();
+
+            // Inner dashes for aesthetic highway styling
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([8, 12]);
+            ctx.strokeStyle = "rgba(255,255,255,0.4)";
+            
+            // Draw main dashes
+            ctx.beginPath();
+            ctx.moveTo(trialNodes.start.x, trialNodes.start.y);
+            if (currentRouteBranch === 'primary') {
+                ctx.lineTo(trialNodes.hazardPoint.x, trialNodes.hazardPoint.y);
+                ctx.lineTo(trialNodes.destination.x, trialNodes.destination.y);
+            } else if (currentRouteBranch === 'detourA') {
+                ctx.lineTo(trialNodes.detourANode.x, trialNodes.detourANode.y);
+                ctx.lineTo(trialNodes.destination.x, trialNodes.destination.y);
+            } else {
+                ctx.lineTo(trialNodes.detourBNode.x, trialNodes.detourBNode.y);
+                ctx.lineTo(trialNodes.destination.x, trialNodes.destination.y);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset
+
+            // Draw Checkpoint Labels
+            drawLabelPoint("STARTING BOOTH", trialNodes.start.x, trialNodes.start.y + 35, "#cbd5e1");
+            drawLabelPoint("GOA CHECKPOINT B", trialNodes.destination.x, trialNodes.destination.y + 35, "#f97316");
+
+            // Draw Detour Choice Click Panels during hazard re-route alerts
+            if (trialHazardActive && currentRouteBranch === 'primary') {
+                // Glow buttons over detour nodes
+                drawDetourTriggerBox("DETOUR ROUTE ALPHA", trialNodes.detourANode.x, trialNodes.detourANode.y, "#06b6d4");
+                drawDetourTriggerBox("DETOUR ROUTE BETA", trialNodes.detourBNode.x, trialNodes.detourBNode.y, "#f97316");
+            }
+
+            // Draw the Hazard Obstruction roadblock
+            if (trialHazardActive) {
+                ctx.fillStyle = "rgba(239, 68, 68, 0.9)";
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2.5;
+                ctx.shadowColor = "#ef4444";
+                ctx.shadowBlur = 12;
+
+                // Draw Triangle hazard
+                ctx.beginPath();
+                ctx.moveTo(trialNodes.hazardPoint.x, trialNodes.hazardPoint.y - 18);
+                ctx.lineTo(trialNodes.hazardPoint.x + 22, trialNodes.hazardPoint.y + 18);
+                ctx.lineTo(trialNodes.hazardPoint.x - 22, trialNodes.hazardPoint.y + 18);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                ctx.shadowBlur = 0; // Reset
+
+                // Alert Exclamation
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 14px monospace";
+                ctx.textAlign = "center";
+                ctx.fillText("!", trialNodes.hazardPoint.x, trialNodes.hazardPoint.y + 12);
+
+                // Roadblock text label
+                ctx.fillStyle = "#f87171";
+                ctx.font = "bold 9px monospace";
+                ctx.fillText("ACCIDENT AHEAD", trialNodes.hazardPoint.x, trialNodes.hazardPoint.y - 25);
+            }
+
+            // Render simulated vehicle (Rider icon) traveling along path
+            let riderCoord = calculateCurrentRiderPosition();
+            ctx.fillStyle = "#f97316";
+            ctx.shadowColor = "#f97316";
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(riderCoord.x, riderCoord.y, 9, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Halo pulse
+            ctx.strokeStyle = "rgba(249, 115, 22, 0.4)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(riderCoord.x, riderCoord.y, 16, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Tiny rider direction marker
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.arc(riderCoord.x, riderCoord.y, 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function calculateCurrentRiderPosition() {
+            let start = trialNodes.start;
+            let dest = trialNodes.destination;
+            let via = null;
+
+            if (currentRouteBranch === 'primary') {
+                via = trialNodes.hazardPoint;
+            } else if (currentRouteBranch === 'detourA') {
+                via = trialNodes.detourANode;
+            } else {
+                via = trialNodes.detourBNode;
+            }
+
+            // Simple segment splits
+            if (trialProgress < 0.5) {
+                let segmentT = trialProgress * 2;
+                return {
+                    x: start.x + (via.x - start.x) * segmentT,
+                    y: start.y + (via.y - start.y) * segmentT
+                };
+            } else {
+                let segmentT = (trialProgress - 0.5) * 2;
+                return {
+                    x: via.x + (dest.x - via.x) * segmentT,
+                    y: via.y + (dest.y - via.y) * segmentT
+                };
+            }
+        }
+
+        function drawLabelPoint(text, x, y, color) {
+            ctx.fillStyle = color;
+            ctx.font = "bold 8px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText(text, x, y);
+            ctx.beginPath();
+            ctx.arc(x, y - 10, 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawDetourTriggerBox(label, x, y, color) {
+            ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(x - 65, y - 24, 130, 34, 4);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 9px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText(label, x, y - 10);
+            ctx.fillStyle = color;
+            ctx.font = "bold 7px monospace";
+            ctx.fillText("TAP TO RE-ROUTE", x, y + 2);
+        }
+
+        function startTrialGame() {
+            trialGameActive = true;
+            trialProgress = 0.0;
+            trialScore = 1000;
+            currentRouteBranch = 'primary';
+            trialHazardActive = false;
+            
+            clearInterval(timerInterval);
+            document.getElementById("btnInjectHazard").disabled = false;
+            document.getElementById("btnStartTrial").innerText = "SIMULATOR RUNNING...";
+            document.getElementById("systemFeedback").innerText = "Trip started! Keep an eye on alerts for roadblocks.";
+            
+            showToast("Trip Dispatched", "Motorcycle simulated route active. Admin panel ready.", "zap");
+            playAudioTone(440, 'sine', 0.2);
+        }
+
+        function injectRoadblock() {
+            if (!trialGameActive) return;
+            trialHazardActive = true;
+            trialTimer = trialTimerMax;
+            
+            document.getElementById("btnInjectHazard").disabled = true;
+            document.getElementById("hazardWarningOverlay").classList.remove("hidden");
+            document.getElementById("systemFeedback").innerText = "WARNING: ROADBLOCK DETECTED! Reroute instantly!";
+            
+            playAlarmSiren();
+
+            // Run countdown
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                trialTimer -= 0.1;
+                if (trialTimer <= 0) {
+                    trialTimer = 0;
+                    clearInterval(timerInterval);
+                    failTimeTrial();
+                }
+                document.getElementById("trialTimerLabel").innerText = trialTimer.toFixed(1) + "s";
+                
+                // Shrink red progress bar
+                let pct = (trialTimer / trialTimerMax) * 100;
+                document.getElementById("trialTimerBar").style.width = pct + "%";
+            }, 100);
+        }
+
+        function selectDetourRoute(branch) {
+            if (!trialHazardActive) return;
+            
+            clearInterval(timerInterval);
+            currentRouteBranch = branch;
+            trialHazardActive = false;
+            
+            document.getElementById("hazardWarningOverlay").classList.add("hidden");
+            
+            // Score calculates based on reaction speed leftover
+            let reactionBonus = Math.round(trialTimer * 100);
+            trialScore += reactionBonus;
+            
+            document.getElementById("trialScoreLabel").innerText = trialScore + " pts";
+            document.getElementById("systemFeedback").innerText = `Successfully rerouted via ${branch.toUpperCase()}. Saved +${reactionBonus} points!`;
+            
+            playChimeMajor();
+            showToast("Excellent Re-route", `Fast reaction! Detour locked. ETA optimized.`, "check");
+        }
+
+        function failTimeTrial() {
+            trialHazardActive = false;
+            trialGameActive = false;
+            document.getElementById("hazardWarningOverlay").classList.add("hidden");
+            document.getElementById("btnStartTrial").innerText = "RESTART SIMULATION RUN";
+            
+            trialScore = Math.max(100, trialScore - 400);
+            document.getElementById("trialScoreLabel").innerText = trialScore + " pts";
+            document.getElementById("systemFeedback").innerText = "CRITICAL FAILURE: Hit hazard zone. Delayed arrival.";
+            
+            playAudioTone(120, 'sawtooth', 0.4);
+            showToast("Accident Corridor Hit", "You ran out of time and hit the simulated detour zone roadblock.", "alert");
+        }
+
+        // -------------------------------------------------------------
+        // ACTIVITY 2: SCAVENGER HUNT SCENE RENDERER
+        // -------------------------------------------------------------
+        function drawScavengerHuntScene() {
+            // Draw Vagator Venue boundaries
+            ctx.strokeStyle = "rgba(6, 182, 212, 0.12)";
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+
+            // Draw Central RE Main Booth Hub
+            const boothCenter = { x: Math.round(canvas.width * 0.72), y: Math.round(canvas.height * 0.57) };
+            ctx.fillStyle = "rgba(249, 115, 22, 0.15)";
+            ctx.strokeStyle = "#f97316";
+            ctx.lineWidth = 2.5;
+            ctx.shadowColor = "#f97316";
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(boothCenter.x, boothCenter.y, 24, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 9px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText("RE BOOTH HUB", boothCenter.x, boothCenter.y + 4);
+
+            // Draw dotted connecting waypoint lines
+            ctx.strokeStyle = "rgba(6, 182, 212, 0.2)";
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([6, 6]);
+            ctx.beginPath();
+            ctx.moveTo(boothCenter.x, boothCenter.y);
+            huntPoints.forEach(pt => {
+                ctx.lineTo(pt.x, pt.y);
+            });
+            ctx.closePath();
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw scavenger target nodes
+            huntPoints.forEach(pt => {
+                let isActiveTarget = false;
+                if (currentCheckPointNum === 0 && pt.id === 'A') isActiveTarget = true;
+                if (currentCheckPointNum === 1 && pt.id === 'B') isActiveTarget = true;
+                if (currentCheckPointNum === 2 && pt.id === 'C') isActiveTarget = true;
+
+                // Glowing pulse if active target
+                if (isActiveTarget) {
+                    ctx.strokeStyle = "rgba(6, 182, 212, 0.35)";
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 22, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                ctx.fillStyle = pt.locked ? "rgba(15, 23, 42, 0.8)" : "rgba(6, 182, 212, 0.15)";
+                ctx.strokeStyle = pt.locked ? "#334155" : "#06b6d4";
+                ctx.lineWidth = 2;
+                
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, 14, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Checkpoint Letters
+                ctx.fillStyle = pt.locked ? "#64748b" : "#ffffff";
+                ctx.font = "bold 10px monospace";
+                ctx.fillText(pt.id, pt.x, pt.y + 3);
+
+                // Side Label
+                ctx.fillStyle = pt.locked ? "#475569" : "#cbd5e1";
+                ctx.font = "bold 8px monospace";
+                ctx.fillText(pt.name, pt.x, pt.y - 20);
+            });
+
+            // Animate moving rider dot
+            let dx = huntTargetPos.x - huntRiderPos.x;
+            let dy = huntTargetPos.y - huntRiderPos.y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist > 2) {
+                huntRiderPos.x += (dx / dist) * 1.5;
+                huntRiderPos.y += (dy / dist) * 1.5;
+                
+                // Soft sound effects while moving
+                if (Math.random() < 0.15) {
+                    playRumbleTone(150);
+                }
+            } else {
+                // Arrived at target, enable scan
+                if (currentCheckPointNum < 3 && !huntPoints[currentCheckPointNum].locked) {
+                    document.getElementById("btnScanQR").disabled = false;
+                }
+            }
+
+            // Draw rider indicator
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = "#f97316";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(huntRiderPos.x, huntRiderPos.y, 7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        function startScavengerHunt() {
+            currentCheckPointNum = 0;
+            pointsUnlocked = { A: false, B: false, C: false };
+            
+            // Unlock first checkpoint A
+            huntPoints[0].locked = false;
+            huntPoints[1].locked = true;
+            huntPoints[2].locked = true;
+
+            const boothCenter = { x: Math.round(canvas.width * 0.72), y: Math.round(canvas.height * 0.57) };
+            huntRiderPos = { x: boothCenter.x, y: boothCenter.y };
+            huntTargetPos = { x: huntPoints[0].x, y: huntPoints[0].y };
+
+            // Reset labels in html
+            document.getElementById("chk1-status").innerText = "Active Target";
+            document.getElementById("chk1-status").className = "text-xs font-mono text-cyan-400 font-bold animate-pulse";
+            
+            document.getElementById("chk2-status").innerText = "Locked";
+            document.getElementById("chk2-status").className = "text-xs font-mono text-slate-500";
+            document.getElementById("chk1").classList.remove("opacity-50");
+            document.getElementById("chk2").classList.add("opacity-50");
+            document.getElementById("chk3").classList.add("opacity-50");
+
+            document.getElementById("btnScanQR").disabled = true;
+            document.getElementById("systemFeedback").innerText = "Hunt active. Rider is navigating towards Checkpoint A.";
+            
+            showToast("Scavenger Active", "GPS coordinates synced. Follow checkpoint path.", "compass");
+            playAudioTone(550, 'sine', 0.15);
+        }
+
+        function mockScanQR() {
+            if (currentCheckPointNum >= 3) return;
+
+            playChimeMajor();
+            document.getElementById("btnScanQR").disabled = true;
+
+            if (currentCheckPointNum === 0) {
+                // Completed Checkpoint A
+                pointsUnlocked.A = true;
+                document.getElementById("chk1-status").innerText = "VERIFIED ✓";
+                document.getElementById("chk1-status").className = "text-xs font-mono text-emerald-400 font-bold";
+                
+                // Unlock Checkpoint B
+                currentCheckPointNum = 1;
+                huntPoints[1].locked = false;
+                huntTargetPos = { x: huntPoints[1].x, y: huntPoints[1].y };
+                
+                document.getElementById("chk2-status").innerText = "Active Target";
+                document.getElementById("chk2-status").className = "text-xs font-mono text-cyan-400 font-bold animate-pulse";
+                document.getElementById("chk2").classList.remove("opacity-50");
+                
+                document.getElementById("systemFeedback").innerText = "Checkpoint A Verified. GPS updated for Checkpoint B.";
+                showToast("Checkpoint Unlocked", "Scan validated. New route drawn to Dirt Track arena.", "check");
+
+            } else if (currentCheckPointNum === 1) {
+                // Completed Checkpoint B
+                pointsUnlocked.B = true;
+                document.getElementById("chk2-status").innerText = "VERIFIED ✓";
+                document.getElementById("chk2-status").className = "text-xs font-mono text-emerald-400 font-bold";
+                
+                // Unlock Checkpoint C
+                currentCheckPointNum = 2;
+                huntPoints[2].locked = false;
+                huntTargetPos = { x: huntPoints[2].x, y: huntPoints[2].y };
+                
+                document.getElementById("chk3-status").innerText = "Active Target";
+                document.getElementById("chk3-status").className = "text-xs font-mono text-cyan-400 font-bold animate-pulse";
+                document.getElementById("chk3").classList.remove("opacity-50");
+
+                document.getElementById("systemFeedback").innerText = "Checkpoint B Verified. GPS updated for Checkpoint C.";
+                showToast("Checkpoint Unlocked", "Scan validated. Proceed to Hilltop Stage.", "check");
+
+            } else if (currentCheckPointNum === 2) {
+                // Completed Loop
+                pointsUnlocked.C = true;
+                document.getElementById("chk3-status").innerText = "VERIFIED ✓";
+                document.getElementById("chk3-status").className = "text-xs font-mono text-emerald-400 font-bold";
+                
+                currentCheckPointNum = 3;
+                // Walk back to main hub
+                const boothCenter = { x: Math.round(canvas.width * 0.72), y: Math.round(canvas.height * 0.57) };
+                huntTargetPos = { x: boothCenter.x, y: boothCenter.y };
+
+                document.getElementById("systemFeedback").innerText = "All Checkpoints Unlocked! Return to the RE Stall.";
+                showToast("Hunt Loop Cleared", "Winner! Head back to Stall Hub to claim your customized reward cap.", "award");
+            }
+        }
+
+        // -------------------------------------------------------------
+        // ACTIVITY 3: "PREDICT THE ETA" CHALLENGE
+        // -------------------------------------------------------------
+        function drawEtaChallengeScene() {
+            const W = canvas.width, H = canvas.height;
+            const streets = [
+                { start: { x: W*0.10, y: H*0.18 }, end: { x: W*0.92, y: H*0.18 }, status: 'moderate', label: "Colaba Highway" },
+                { start: { x: W*0.10, y: H*0.40 }, end: { x: W*0.92, y: H*0.40 }, status: 'heavy',    label: "Marine Drive Bypass" },
+                { start: { x: W*0.10, y: H*0.62 }, end: { x: W*0.92, y: H*0.62 }, status: 'clear',    label: "Eastern Express Link" },
+                { start: { x: W*0.10, y: H*0.84 }, end: { x: W*0.92, y: H*0.84 }, status: 'heavy',    label: "Wadala Connector" },
+                { start: { x: W*0.20, y: H*0.06 }, end: { x: W*0.20, y: H*0.94 }, status: 'clear' },
+                { start: { x: W*0.40, y: H*0.06 }, end: { x: W*0.40, y: H*0.94 }, status: 'heavy' },
+                { start: { x: W*0.60, y: H*0.06 }, end: { x: W*0.60, y: H*0.94 }, status: 'moderate' },
+                { start: { x: W*0.80, y: H*0.06 }, end: { x: W*0.80, y: H*0.94 }, status: 'clear' }
+            ];
+
+            // Render Roads with dynamic colored congestion strokes
+            streets.forEach(street => {
+                ctx.lineWidth = 10;
+                ctx.lineCap = "round";
+
+                if (street.status === 'clear') {
+                    ctx.strokeStyle = "rgba(16, 185, 129, 0.45)"; // Emerald Green
+                } else if (street.status === 'moderate') {
+                    ctx.strokeStyle = "rgba(245, 158, 11, 0.5)"; // Amber Yellow
+                } else {
+                    ctx.strokeStyle = "rgba(239, 68, 68, 0.55)"; // Heavy Red Congestion
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(street.start.x, street.start.y);
+                ctx.lineTo(street.end.x, street.end.y);
+                ctx.stroke();
+
+                // Dynamic traffic lines animation (moving dots inside heavy congestion)
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([6, 18]);
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
+                ctx.beginPath();
+                ctx.moveTo(street.start.x, street.start.y);
+                ctx.lineTo(street.end.x, street.end.y);
+                ctx.stroke();
+                ctx.setLineDash([]); // Reset
+            });
+
+            // Draw labeled text indicators above streets
+            streets.forEach(st => {
+                if (st.label) {
+                    ctx.fillStyle = "rgba(255,255,255,0.4)";
+                    ctx.font = "8px monospace";
+                    ctx.textAlign = "left";
+                    ctx.fillText(st.label, st.start.x + 10, st.start.y - 10);
+                }
+            });
+
+            const routeStart = { x: W*0.20, y: H*0.18 };
+            const routeEnd   = { x: W*0.80, y: H*0.84 };
+
+            // Pulse beacon on Start
+            ctx.fillStyle = "rgba(16, 185, 129, 0.2)";
+            ctx.strokeStyle = "#10b981";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(routeStart.x, routeStart.y, 22, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 9px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText("STALL A", routeStart.x, routeStart.y + 4);
+
+            // Pulse beacon on End
+            ctx.fillStyle = "rgba(168, 85, 247, 0.2)";
+            ctx.strokeStyle = "#a855f7";
+            ctx.beginPath();
+            ctx.arc(routeEnd.x, routeEnd.y, 22, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText("DEST B", routeEnd.x, routeEnd.y + 4);
+
+            // Animated scanning radar sweep overlay
+            if (isSweepingEta) {
+                etaSweepCounter += 3;
+                if (etaSweepCounter > canvas.width) {
+                    etaSweepCounter = 0;
+                    isSweepingEta = false;
+                    finishEtaAnalysis();
+                }
+
+                ctx.strokeStyle = "rgba(168, 85, 247, 0.5)";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(etaSweepCounter, 0);
+                ctx.lineTo(etaSweepCounter, canvas.height);
+                ctx.stroke();
+
+                // Semi transparent overlay
+                ctx.fillStyle = "rgba(168, 85, 247, 0.03)";
+                ctx.fillRect(0, 0, etaSweepCounter, canvas.height);
+            }
+        }
+
+        function updateGuessSlider(val) {
+            currentEtaGuess = val;
+            document.getElementById("userGuessLabel").innerText = val + " minutes";
+        }
+
+        function submitEtaChallenge() {
+            isSweepingEta = true;
+            etaSweepCounter = 0;
+            
+            document.getElementById("systemFeedback").innerText = "Evaluating Mumbai grid. Initiating real-time SDK machine learning analysis...";
+            playAudioTone(880, 'triangle', 0.35);
+        }
+
+        function finishEtaAnalysis() {
+            // Procedurally calculate realistic target based on congestion grid values
+            calculatedSdkEta = 34; // standard congested route time
+            deltaDifference = Math.abs(currentEtaGuess - calculatedSdkEta);
+
+            const board = document.getElementById("etaResultsBoard");
+            board.classList.remove("hidden");
+
+            document.getElementById("labelUserEstimate").innerText = currentEtaGuess + " mins";
+            document.getElementById("labelSdkEstimate").innerText = calculatedSdkEta + " mins";
+            document.getElementById("labelVarianceDelta").innerText = deltaDifference + " mins";
+
+            const badge = document.getElementById("rewardStatusBadge");
+            if (deltaDifference <= 2) {
+                badge.innerText = "🏆 MASTER ESTIMATOR WINNER! DELTA ≤ 2 MINS";
+                badge.className = "p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-center text-xs font-mono font-bold animate-pulse mt-2";
+                playChimeMajor();
+                showToast("Perfect Prediction", `Your guess was incredibly close! Claim your event prize at the booth.`, "award");
+            } else {
+                badge.innerText = "TRY AGAIN! REDUCE THE ML VARIANCE DELTA";
+                badge.className = "p-2 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-center text-xs font-mono mt-2";
+                playAudioTone(250, 'sawtooth', 0.2);
+                showToast("Try Again", `Your guess has a ${deltaDifference} minute variance against the SDK. Adjust and retry!`, "alert");
+            }
+
+            document.getElementById("systemFeedback").innerText = `Analysis Completed. Human/AI Delta variance calculated: ${deltaDifference} minutes.`;
+        }
+
+        function handleCanvasClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+
+            if (activeTab === 'trial' && trialHazardActive) {
+                // Check if detour option A clicked
+                const distA = Math.sqrt((clickX - trialNodes.detourANode.x) ** 2 + (clickY - trialNodes.detourANode.y) ** 2);
+                const distB = Math.sqrt((clickX - trialNodes.detourBNode.x) ** 2 + (clickY - trialNodes.detourBNode.y) ** 2);
+
+                if (distA < 65) {
+                    selectDetourRoute('detourA');
+                } else if (distB < 65) {
+                    selectDetourRoute('detourB');
+                }
+            }
+        }
+
+        function handleCanvasMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            if (activeTab === 'trial' && trialHazardActive) {
+                const distA = Math.sqrt((mouseX - trialNodes.detourANode.x) ** 2 + (mouseY - trialNodes.detourANode.y) ** 2);
+                const distB = Math.sqrt((mouseX - trialNodes.detourBNode.x) ** 2 + (mouseY - trialNodes.detourBNode.y) ** 2);
+
+                if (distA < 65 || distB < 65) {
+                    canvas.style.cursor = 'pointer';
+                } else {
+                    canvas.style.cursor = 'default';
+                }
+            } else {
+                canvas.style.cursor = 'default';
+            }
+        }
+
+        function resetCurrentGame() {
+            clearInterval(timerInterval);
+            trialGameActive = false;
+            trialHazardActive = false;
+            trialProgress = 0.0;
+            trialTimer = 10.0;
+            currentRouteBranch = 'primary';
+            
+            currentCheckPointNum = 0;
+            pointsUnlocked = { A: false, B: false, C: false };
+
+            isSweepingEta = false;
+            document.getElementById("etaResultsBoard").classList.add("hidden");
+            document.getElementById("hazardWarningOverlay").classList.add("hidden");
+            document.getElementById("btnInjectHazard").disabled = true;
+            document.getElementById("btnStartTrial").innerText = "START SIMULATION RUN";
+            
+            document.getElementById("trialTimerBar").style.width = "100%";
+            document.getElementById("trialTimerLabel").innerText = "0.0s";
+
+            playAudioTone(200, 'sine', 0.15);
+            showToast("System Reset", "Current gamified activation layout returned to default parameters.", "compass");
+        }
+
+        // Animated draw tick sequence
+        function animateArena() {
+            drawActiveWorkspace();
+
+            // Progress motorcycle if time trial is running
+            if (activeTab === 'trial' && trialGameActive && !trialHazardActive) {
+                trialProgress += travelSpeed;
+                document.getElementById("trialProgressLabel").innerText = Math.round(trialProgress * 100) + "%";
+
+                if (trialProgress >= 1.0) {
+                    trialGameActive = false;
+                    document.getElementById("btnStartTrial").innerText = "START SIMULATION RUN";
+                    playChimeMajor();
+                    showToast("Trip Succeeded", `Successfully reached destination with ${trialScore} points!`, "award");
+                }
+            }
+
+            requestAnimationFrame(animateArena);
+        }
+
+        // Custom alternative visual toast indicator
+        function showToast(title, msg, iconType) {
+            const toast = document.getElementById("gameToast");
+            const icon = document.getElementById("toastIcon");
+            
+            document.getElementById("toastMessage").innerText = msg;
+            document.getElementById("toastTitle").innerText = title.toUpperCase();
+
+            if (iconType === 'check') icon.setAttribute("data-lucide", "check-circle");
+            else if (iconType === 'alert') icon.setAttribute("data-lucide", "alert-triangle");
+            else if (iconType === 'zap') icon.setAttribute("data-lucide", "zap");
+            else icon.setAttribute("data-lucide", "award");
+
+            lucide.createIcons();
+
+            // Pop in transition
+            toast.classList.remove("translate-y-24", "opacity-0");
+            toast.classList.add("translate-y-0", "opacity-100");
+
+            setTimeout(() => {
+                // Slide out transition
+                toast.classList.remove("translate-y-0", "opacity-100");
+                toast.classList.add("translate-y-24", "opacity-0");
+            }, 3200);
+        }
+    </script>
+</body>
+</html>

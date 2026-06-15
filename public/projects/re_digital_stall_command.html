@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE Motoverse - 3-Day Stall Command & Touchpoint Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syncopate:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #030611;
+            overflow-x: hidden;
+        }
+
+        .syncopate {
+            font-family: 'Syncopate', sans-serif;
+        }
+
+        .cyber-grid {
+            background: linear-gradient(
+                rgba(18, 24, 38, 0) 50%,
+                rgba(0, 0, 0, 0.45) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(249, 115, 22, 0.03) 0%,
+                rgba(0, 0, 0, 0) 8%
+            );
+            background-size: 100% 4px, 16px 100%;
+        }
+
+        .glass-panel {
+            background: rgba(8, 12, 28, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glow-active {
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.35);
+            border-color: rgba(249, 115, 22, 0.6) !important;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #030611; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f97316; }
+
+        #splash {
+            position: fixed; inset: 0; z-index: 9999;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 20px;
+            background: #030611; cursor: pointer; transition: opacity 0.3s;
+        }
+        #splash:hover { background: #0a0f1a; }
+        #splash .sp-icon { font-size: 64px; opacity: 0.7; }
+        #splash .sp-label { font-size: 13px; color: rgba(148,163,184,0.6); text-transform: uppercase; letter-spacing: 0.15em; }
+        #splash .sp-btn {
+            padding: 10px 28px; border-radius: 999px;
+            background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.4);
+            color: #f97316; font-size: 13px; letter-spacing: 0.08em;
+        }
+    </style>
+</head>
+<body class="text-slate-100 flex flex-col min-h-screen relative cyber-grid">
+
+    <div id="splash" onclick="loadApp()">
+        <div class="sp-icon">📊</div>
+        <div class="sp-label">Stall Command · Digital Hub</div>
+        <div class="sp-btn">▶ Launch Dashboard</div>
+    </div>
+
+    <header class="border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md px-6 py-4 z-20 flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center gap-4">
+            <div class="p-2.5 bg-orange-500/10 border border-orange-500/30 rounded-xl relative">
+                <i data-lucide="shield" class="w-6 h-6 text-orange-500"></i>
+                <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping"></span>
+            </div>
+            <div>
+                <h1 class="text-lg md:text-xl font-bold tracking-widest text-slate-100 uppercase syncopate">
+                    RE MOTOVERSE <span class="text-orange-500">// DIGITAL TEAM</span>
+                </h1>
+                <p class="text-[10px] text-slate-400 tracking-wider font-mono uppercase">Attendance logs, customer feedback, and technical support command desk</p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+            <button id="soundToggleBtn" onclick="toggleConsoleAudio()" class="px-4 py-2 border border-slate-800 bg-slate-900/60 rounded-xl hover:border-orange-500/40 hover:text-orange-400 transition-all duration-200 flex items-center gap-2 text-xs font-mono">
+                <i data-lucide="volume-2" id="soundIcon" class="w-4 h-4 text-orange-500"></i>
+                <span id="soundLabel">SOUNDS: ACTIVE</span>
+            </button>
+            <div class="text-xs bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3.5 py-2 rounded-xl font-mono flex items-center gap-2">
+                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                <span>SYSTEM SYNCED</span>
+            </div>
+        </div>
+    </header>
+
+    <section class="mx-6 mt-6 p-4 bg-slate-950/80 border border-slate-800/80 rounded-2xl flex flex-col lg:flex-row items-center justify-between gap-4 z-10">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-indigo-500/10 border border-indigo-500/30 rounded-lg text-indigo-400">
+                <i data-lucide="calendar" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h2 class="text-sm font-bold font-mono text-slate-200 uppercase tracking-wider">Touchpoint Records Timeline</h2>
+                <p class="text-[11px] text-slate-400 font-mono">Switch views to review past operational statistics or generate the cumulative event summary.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full lg:w-auto">
+            <button onclick="switchActiveDay('day1')" id="tab-day1" class="px-4 py-2.5 rounded-xl border border-slate-800 bg-slate-900/60 text-xs font-mono font-bold transition-all flex items-center justify-center gap-2 hover:border-slate-700 text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                DAY 1: ARCHIVE
+            </button>
+            <button onclick="switchActiveDay('day2')" id="tab-day2" class="px-4 py-2.5 rounded-xl border border-slate-800 bg-slate-900/60 text-xs font-mono font-bold transition-all flex items-center justify-center gap-2 hover:border-slate-700 text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                DAY 2: ARCHIVE
+            </button>
+            <button onclick="switchActiveDay('day3')" id="tab-day3" class="px-4 py-2.5 rounded-xl border border-orange-500 bg-orange-950/20 text-orange-400 text-xs font-mono font-bold transition-all flex items-center justify-center gap-2 glow-active">
+                <span class="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span>
+                DAY 3: LIVE ACTIVE
+            </button>
+            <button onclick="switchActiveDay('cumulative')" id="tab-cumulative" class="px-4 py-2.5 rounded-xl border border-slate-800 bg-slate-900/60 text-xs font-mono font-bold transition-all flex items-center justify-center gap-2 hover:border-slate-700 text-slate-400">
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-cyan-400"></i>
+                CUMULATIVE OVERVIEW
+            </button>
+        </div>
+    </section>
+
+    <main class="flex-grow p-6 grid grid-cols-1 xl:grid-cols-12 gap-6 z-10">
+
+        <!-- LEFT COLUMN: LIVE TELEMETRY STATS -->
+        <section class="xl:col-span-4 flex flex-col gap-6">
+
+            <div class="glass-panel rounded-2xl p-5 space-y-4">
+                <h2 class="text-xs font-bold tracking-widest font-mono text-slate-400 uppercase flex items-center gap-2 border-b border-slate-800 pb-2">
+                    <i data-lucide="bar-chart-2" class="text-orange-500 w-4 h-4"></i>
+                    Touchpoint Telemetry
+                </h2>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="bg-slate-900/50 border border-slate-800/80 p-4 rounded-xl flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Total Attendance</p>
+                            <h3 class="text-3xl font-bold font-mono text-slate-100 mt-1" id="metricTotalFootfall">0</h3>
+                            <p class="text-[9px] text-orange-400 font-mono mt-0.5" id="metricReAppPercentage">0% using RE App</p>
+                        </div>
+                        <div class="p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl text-orange-400">
+                            <i data-lucide="users" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800/80 p-4 rounded-xl flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] text-slate-400 uppercase font-mono tracking-wider">CSAT Sentiment</p>
+                            <h3 class="text-3xl font-bold font-mono text-slate-100 mt-1" id="metricCsat">0%</h3>
+                            <p class="text-[9px] text-cyan-400 font-mono mt-0.5" id="metricCsatCount">0 Reviews registered</p>
+                        </div>
+                        <div class="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-xl text-cyan-400">
+                            <i data-lucide="thumbs-up" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800/80 p-4 rounded-xl flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Support Resolution</p>
+                            <h3 class="text-3xl font-bold font-mono text-slate-100 mt-1" id="metricSupportCount">0</h3>
+                            <p class="text-[9px] text-emerald-400 font-mono mt-0.5" id="metricSupportLabel">0 Resolved / 0 Active</p>
+                        </div>
+                        <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400">
+                            <i data-lucide="wrench" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-5 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h2 class="text-xs font-bold tracking-widest font-mono text-slate-400 uppercase flex items-center gap-2">
+                        <i data-lucide="file-text" class="text-indigo-400 w-4 h-4"></i>
+                        Manager Dispatch Desk
+                    </h2>
+                </div>
+                <p class="text-[11px] text-slate-400 leading-relaxed font-mono">
+                    Construct a structured operational briefing file containing all daily parameters or cumulative statistics. Export immediately to managers or stakeholder teams.
+                </p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="compileMarkdownSummary()" class="py-2.5 px-3 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-bold text-xs rounded-xl font-mono transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="copy" class="w-3.5 h-3.5 text-orange-400"></i>
+                        COPY DOSSIER
+                    </button>
+                    <button onclick="dispatchManagerEmail()" class="py-2.5 px-3 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-bold text-xs rounded-xl font-mono transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="mail" class="w-3.5 h-3.5 text-cyan-400"></i>
+                        EMAIL DIRECT
+                    </button>
+                </div>
+                <button onclick="triggerOpsAudit()" class="w-full py-3 bg-indigo-950/40 border border-indigo-500/40 hover:border-indigo-400 text-indigo-300 font-bold text-xs rounded-xl font-mono transition-all flex items-center justify-center gap-2 hover:shadow-indigo-950/20 shadow-lg">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-indigo-400 animate-pulse"></i>
+                    GENERATE OPS REPORT
+                </button>
+            </div>
+        </section>
+
+        <!-- CENTRE COLUMN: CHECK-IN DESK -->
+        <section class="xl:col-span-5 flex flex-col gap-6">
+
+            <div class="glass-panel rounded-2xl p-5 flex flex-col flex-grow">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                    <div>
+                        <h2 class="text-sm font-bold tracking-wider font-mono text-slate-200 uppercase flex items-center gap-2">
+                            <i data-lucide="user-plus" class="text-orange-500 w-4 h-4"></i>
+                            Stall Rider Check-In Desk
+                        </h2>
+                        <p class="text-[10px] text-slate-400 font-mono mt-0.5">Register new attendees at the digital team booth</p>
+                    </div>
+                    <span id="dayIndicatorBadge" class="text-[9px] font-mono px-2 py-0.5 bg-orange-500/15 border border-orange-500/30 text-orange-400 rounded-md">LIVE - DAY 3</span>
+                </div>
+
+                <div id="checkinFormContainer" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase font-mono text-slate-400 mb-1.5">Rider Name</label>
+                            <input type="text" id="regName" placeholder="e.g. Advait Singh" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-mono text-slate-400 mb-1.5">Bike Model</label>
+                            <select id="regBike" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 rounded-xl px-3 py-1.5 text-xs font-mono text-slate-200 outline-none transition-all">
+                                <option value="Himalayan 450">Himalayan 450</option>
+                                <option value="Interceptor 650">Interceptor 650</option>
+                                <option value="Classic 350">Classic 350</option>
+                                <option value="Continental GT 650">Continental GT 650</option>
+                                <option value="Shotgun 650">Shotgun 650</option>
+                                <option value="Hunter 350">Hunter 350</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-slate-900/40 p-3 border border-slate-850 rounded-xl">
+                        <div class="space-y-0.5">
+                            <p class="text-xs font-bold font-mono text-slate-300">Using Royal Enfield App?</p>
+                            <p class="text-[9px] font-mono text-slate-500">Participant uses RE app GPX routes</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="regReApp" class="sr-only peer" checked>
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-600 peer-checked:after:bg-slate-100"></div>
+                        </label>
+                    </div>
+
+                    <button onclick="registerAttendee()" id="regSubmitBtn" class="w-full py-3 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-xs rounded-xl font-mono transition-all flex items-center justify-center gap-2 shadow-lg shadow-orange-950/20">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        SUBMIT ATTENDEE LOG
+                    </button>
+                </div>
+
+                <div class="mt-5 flex-grow flex flex-col">
+                    <h3 class="text-xs font-bold uppercase font-mono text-slate-400 border-b border-slate-850 pb-2 mb-2 flex items-center justify-between">
+                        <span>Attendance Activity Log</span>
+                        <span id="logCount" class="text-[10px] text-orange-400">0 Checked In</span>
+                    </h3>
+                    <div class="overflow-y-auto max-h-[180px] space-y-2 flex-grow pr-1" id="riderLogsFeed"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN: FEEDBACK + SUPPORT -->
+        <section class="xl:col-span-3 flex flex-col gap-6">
+
+            <div class="glass-panel rounded-2xl p-5 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h2 class="text-xs font-bold tracking-widest font-mono text-slate-400 uppercase flex items-center gap-2">
+                        <i data-lucide="message-square" class="text-cyan-400 w-4 h-4"></i>
+                        App Experience Feedback
+                    </h2>
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] uppercase font-mono text-slate-400 mb-1">Rider Sentiment Rating</label>
+                        <div class="flex items-center gap-2 justify-between" id="ratingSelector">
+                            <button onclick="selectFeedbackRating(1)" class="p-1 border border-slate-800 bg-slate-900 rounded-lg text-xs font-mono w-8 text-center text-red-400">1★</button>
+                            <button onclick="selectFeedbackRating(2)" class="p-1 border border-slate-800 bg-slate-900 rounded-lg text-xs font-mono w-8 text-center text-orange-400">2★</button>
+                            <button onclick="selectFeedbackRating(3)" class="p-1 border border-slate-800 bg-slate-900 rounded-lg text-xs font-mono w-8 text-center text-yellow-400">3★</button>
+                            <button onclick="selectFeedbackRating(4)" class="p-1 border border-slate-800 bg-slate-900 rounded-lg text-xs font-mono w-8 text-center text-blue-400">4★</button>
+                            <button onclick="selectFeedbackRating(5)" class="p-1 border border-orange-500/40 bg-orange-950/20 rounded-lg text-xs font-mono w-8 text-center text-orange-400 font-bold" id="selectedStar">5★</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] uppercase font-mono text-slate-400 mb-1">Rider Review Comment</label>
+                        <textarea id="feedbackText" rows="2" placeholder="e.g. The Wingman engine tracking works great, loving the updates!" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs font-mono text-slate-200 outline-none focus:border-cyan-500 transition-all resize-none"></textarea>
+                    </div>
+
+                    <button onclick="submitFeedback()" id="feedbackSubmitBtn" class="w-full py-2 bg-slate-900 border border-slate-800 hover:border-cyan-500/40 text-cyan-400 text-xs font-mono rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        RECORD APP CRITIQUE
+                    </button>
+                </div>
+
+                <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-900 space-y-2 max-h-[110px] overflow-y-auto" id="feedbackFeed"></div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-5 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h2 class="text-xs font-bold tracking-widest font-mono text-slate-400 uppercase flex items-center gap-2">
+                        <i data-lucide="life-buoy" class="text-emerald-400 w-4 h-4"></i>
+                        Stall Support Desk
+                    </h2>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="injectSupportRequest('GPX Import issue', 'Rider unable to import raw GPX files on Android')" class="py-2 px-1 bg-slate-900 border border-slate-800 hover:border-red-500/30 text-slate-300 hover:text-red-400 text-[9px] rounded-lg font-mono transition-all">
+                            + GPX IMPORT ERROR
+                        </button>
+                        <button onclick="injectSupportRequest('Bluetooth Pairing', 'Instrument cluster pairing failed with iOS 19')" class="py-2 px-1 bg-slate-900 border border-slate-800 hover:border-red-500/30 text-slate-300 hover:text-red-400 text-[9px] rounded-lg font-mono transition-all">
+                            + BLUETOOTH PAIR
+                        </button>
+                        <button onclick="injectSupportRequest('Wingman Sync', 'Telematic score delayed on active ride profile')" class="py-2 px-1 bg-slate-900 border border-slate-800 hover:border-red-500/30 text-slate-300 hover:text-red-400 text-[9px] rounded-lg font-mono transition-all">
+                            + WINGMAN DELAY
+                        </button>
+                        <button onclick="resolveSupportRequest()" class="py-2 px-1 bg-emerald-950/20 border border-emerald-500/30 hover:border-emerald-400 text-emerald-400 text-[9px] rounded-lg font-mono transition-all font-bold">
+                            ✔ RESOLVE TICKET
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-900 space-y-2 max-h-[100px] overflow-y-auto" id="supportFeed"></div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- OPS REPORT MODAL -->
+    <div id="aiModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-panel w-full max-w-2xl rounded-2xl p-6 flex flex-col max-h-[80vh]">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-indigo-400"></i>
+                    <h3 class="text-sm font-bold font-mono text-slate-100 uppercase tracking-widest" id="aiModalTitle">Operational Audit</h3>
+                </div>
+                <button onclick="closeAiModal()" class="p-1 hover:bg-slate-900 rounded-lg text-slate-400 hover:text-slate-200 transition-all">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="flex-grow overflow-y-auto pr-2 text-xs font-mono leading-relaxed text-slate-300 space-y-4 whitespace-pre-wrap select-all" id="aiModalContent">
+                Generating operational summary...
+            </div>
+
+            <div class="flex justify-between items-center border-t border-slate-800 pt-4 mt-4">
+                <button onclick="copyToClipboard(document.getElementById('aiModalContent').innerText, 'Report copied to clipboard!')" class="py-2 px-4 bg-slate-900 border border-slate-800 text-slate-300 hover:text-slate-100 rounded-xl text-xs font-mono transition-all flex items-center gap-2">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    Copy Report Content
+                </button>
+                <button onclick="closeAiModal()" class="py-2 px-6 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-mono font-bold transition-all">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+    <script>
+        const eventDatabase = {
+            day1: {
+                totalFootfall: 145,
+                csatTotal: 4.8,
+                csatCount: 52,
+                reAppUsers: 110,
+                feedback: [
+                    { name: "Rahul Sharma", comment: "Wingman dashboard setup was fast. The tech support guide was helpful.", score: 5, time: "11:42 AM" },
+                    { name: "Suresh Patil", comment: "Faced GPX mapping problems, resolved by resetting regional parameters.", score: 4, time: "02:15 PM" },
+                    { name: "Meera Nair", comment: "The GPS offline route map worked flawlessly on my Himalayan.", score: 5, time: "05:10 PM" }
+                ],
+                visitors: [
+                    { name: "Rahul Sharma", bike: "Himalayan 450", appUser: true, time: "11:30 AM" },
+                    { name: "Anil K.", bike: "Interceptor 650", appUser: true, time: "12:15 PM" },
+                    { name: "Suresh Patil", bike: "Classic 350", appUser: false, time: "02:00 PM" },
+                    { name: "Meera Nair", bike: "Himalayan 450", appUser: true, time: "05:00 PM" }
+                ],
+                tickets: [
+                    { id: "T-101", category: "GPX Import issue", description: "Rider unable to import custom map", status: "resolved", time: "11:00 AM" },
+                    { id: "T-102", category: "Bluetooth Pairing", description: "iOS 19 disconnects from cluster", status: "resolved", time: "03:30 PM" }
+                ]
+            },
+            day2: {
+                totalFootfall: 198,
+                csatTotal: 4.6,
+                csatCount: 74,
+                reAppUsers: 165,
+                feedback: [
+                    { name: "Karan Johar", comment: "Nice UI updates on RE app. Highly legible offline telemetry panels.", score: 5, time: "10:15 AM" },
+                    { name: "Riddhima S.", comment: "Had pairing bugs but resolved within minutes. Great guidance.", score: 4, time: "03:40 PM" },
+                    { name: "Kabir Singh", comment: "I use GPX routing on continental GT daily. Outstanding accuracy.", score: 5, time: "08:12 PM" }
+                ],
+                visitors: [
+                    { name: "Karan Johar", bike: "Classic 350", appUser: true, time: "10:00 AM" },
+                    { name: "Riddhima S.", bike: "Shotgun 650", appUser: true, time: "03:25 PM" },
+                    { name: "Kabir Singh", bike: "Continental GT 650", appUser: true, time: "08:00 PM" }
+                ],
+                tickets: [
+                    { id: "T-201", category: "Wingman Sync", description: "Telematic statistics lagged by 2 hrs", status: "resolved", time: "11:15 AM" },
+                    { id: "T-202", category: "Bluetooth Pairing", description: "Android 14 audio routing fail", status: "resolved", time: "04:10 PM" }
+                ]
+            },
+            day3: {
+                totalFootfall: 84,
+                csatTotal: 4.7,
+                csatCount: 31,
+                reAppUsers: 68,
+                feedback: [
+                    { name: "Vikram Goel", comment: "The custom offline sync tool resolved my GPX route mapping immediately.", score: 5, time: "09:30 AM" },
+                    { name: "Priya Soni", comment: "Stall hosts are knowledgeable. Sorted my Wingman alert delay.", score: 4, time: "12:15 PM" }
+                ],
+                visitors: [
+                    { name: "Vikram Goel", bike: "Himalayan 450", appUser: true, time: "09:15 AM" },
+                    { name: "Priya Soni", bike: "Hunter 350", appUser: true, time: "12:00 PM" },
+                    { name: "Sujith M.", bike: "Classic 350", appUser: false, time: "01:10 PM" }
+                ],
+                tickets: [
+                    { id: "T-301", category: "GPX Import issue", description: "GPX coordinate syntax failure", status: "active", time: "11:20 AM" },
+                    { id: "T-302", category: "Bluetooth Pairing", description: "Cluster sync disconnects randomly", status: "active", time: "01:45 PM" }
+                ]
+            }
+        };
+
+        let activeDay = "day3";
+        let selectedStarRating = 5;
+        let soundActive = true;
+        let audioCtx = null;
+
+        function loadApp() {
+            const splash = document.getElementById('splash');
+            splash.style.opacity = '0';
+            setTimeout(() => { splash.style.display = 'none'; initApp(); }, 300);
+        }
+
+        function initApp() {
+            lucide.createIcons();
+            switchActiveDay("day3");
+        }
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playChime(freq = 880, type = "sine", duration = 0.15) {
+            if (!soundActive) return;
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.warn("Audio Context blocked:", e);
+            }
+        }
+
+        function toggleConsoleAudio() {
+            soundActive = !soundActive;
+            const btn = document.getElementById("soundToggleBtn");
+            const label = document.getElementById("soundLabel");
+            const icon = document.getElementById("soundIcon");
+            if (soundActive) {
+                label.innerText = "SOUNDS: ACTIVE";
+                btn.classList.remove("text-slate-500", "border-slate-800");
+                btn.classList.add("text-orange-400", "border-orange-500/30");
+                icon.setAttribute("data-lucide", "volume-2");
+                playChime(600, "triangle", 0.1);
+            } else {
+                label.innerText = "SOUNDS: MUTED";
+                btn.classList.add("text-slate-500", "border-slate-800");
+                btn.classList.remove("text-orange-400", "border-orange-500/30");
+                icon.setAttribute("data-lucide", "volume-x");
+            }
+            lucide.createIcons();
+        }
+
+        function setInner(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = value;
+        }
+
+        function switchActiveDay(day) {
+            activeDay = day;
+            ["day1", "day2", "day3", "cumulative"].forEach(d => {
+                const tab = document.getElementById(`tab-${d}`);
+                if (!tab) return;
+                if (d === day) {
+                    tab.className = "px-4 py-2.5 rounded-xl border border-orange-500 bg-orange-950/20 text-orange-400 text-xs font-mono font-bold transition-all flex items-center justify-center gap-2 glow-active";
+                    const circle = tab.querySelector("span");
+                    if (circle) circle.className = "w-2 h-2 rounded-full bg-orange-500 animate-ping";
+                } else {
+                    tab.className = "px-4 py-2.5 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-400 text-xs font-mono font-bold transition-all flex items-center justify-center gap-2 hover:border-slate-700";
+                    const circle = tab.querySelector("span");
+                    if (circle) circle.className = "w-2 h-2 rounded-full bg-slate-500";
+                }
+            });
+
+            const isArchive = (day === "day1" || day === "day2" || day === "cumulative");
+            const submitCheckin = document.getElementById("regSubmitBtn");
+            const submitFeedbackBtn = document.getElementById("feedbackSubmitBtn");
+            const forms = document.getElementById("checkinFormContainer");
+            if (isArchive) {
+                if (submitCheckin) submitCheckin.disabled = true;
+                if (submitFeedbackBtn) submitFeedbackBtn.disabled = true;
+                if (forms) forms.classList.add("opacity-40", "pointer-events-none");
+                const badge = document.getElementById("dayIndicatorBadge");
+                if (badge) {
+                    badge.innerText = day === "cumulative" ? "CUMULATIVE VIEW" : "ARCHIVED DATA";
+                    badge.className = "text-[9px] font-mono px-2 py-0.5 bg-slate-800 border border-slate-700 text-slate-400 rounded-md";
+                }
+            } else {
+                if (submitCheckin) submitCheckin.disabled = false;
+                if (submitFeedbackBtn) submitFeedbackBtn.disabled = false;
+                if (forms) forms.classList.remove("opacity-40", "pointer-events-none");
+                const badge = document.getElementById("dayIndicatorBadge");
+                if (badge) {
+                    badge.innerText = "LIVE - DAY 3";
+                    badge.className = "text-[9px] font-mono px-2 py-0.5 bg-orange-500/15 border border-orange-500/30 text-orange-400 rounded-md";
+                }
+            }
+
+            renderTouchpointMetrics();
+            renderDynamicActivityFeeds();
+            showToast(`Rendered operational panel: ${day.toUpperCase()}`);
+            playChime(523, "sine", 0.1);
+        }
+
+        function renderTouchpointMetrics() {
+            if (activeDay === "cumulative") {
+                const totalAttended = eventDatabase.day1.totalFootfall + eventDatabase.day2.totalFootfall + eventDatabase.day3.totalFootfall;
+                const totalAppUsers = eventDatabase.day1.reAppUsers + eventDatabase.day2.reAppUsers + eventDatabase.day3.reAppUsers;
+                const reAppPercentage = totalAttended > 0 ? ((totalAppUsers / totalAttended) * 100).toFixed(1) : 0;
+                const totalRatingsCount = eventDatabase.day1.csatCount + eventDatabase.day2.csatCount + eventDatabase.day3.csatCount;
+                const totalWeightedPoints = (eventDatabase.day1.csatTotal * eventDatabase.day1.csatCount) +
+                                            (eventDatabase.day2.csatTotal * eventDatabase.day2.csatCount) +
+                                            (eventDatabase.day3.csatTotal * eventDatabase.day3.csatCount);
+                const avgCsatPercentage = totalRatingsCount > 0 ? ((totalWeightedPoints / totalRatingsCount) / 5) * 100 : 0;
+                const allTickets = [...eventDatabase.day1.tickets, ...eventDatabase.day2.tickets, ...eventDatabase.day3.tickets];
+                const resolvedCount = allTickets.filter(t => t.status === "resolved").length;
+                const activeCount = allTickets.filter(t => t.status === "active").length;
+                setInner("metricTotalFootfall", totalAttended);
+                setInner("metricReAppPercentage", `${reAppPercentage}% RE App Users`);
+                setInner("metricCsat", `${avgCsatPercentage.toFixed(1)}%`);
+                setInner("metricCsatCount", `${totalRatingsCount} Global Reviews`);
+                setInner("metricSupportCount", resolvedCount + activeCount);
+                setInner("metricSupportLabel", `${resolvedCount} Resolved / ${activeCount} Pending`);
+            } else {
+                const db = eventDatabase[activeDay];
+                if (!db) return;
+                const reAppPercentage = db.totalFootfall > 0 ? ((db.reAppUsers / db.totalFootfall) * 100).toFixed(1) : 0;
+                const csatPercentage = (db.csatTotal / 5) * 100;
+                const resolvedCount = db.tickets.filter(t => t.status === "resolved").length;
+                const activeCount = db.tickets.filter(t => t.status === "active").length;
+                setInner("metricTotalFootfall", db.totalFootfall);
+                setInner("metricReAppPercentage", `${reAppPercentage}% RE App Users`);
+                setInner("metricCsat", `${csatPercentage.toFixed(1)}%`);
+                setInner("metricCsatCount", `${db.csatCount} Reviews Today`);
+                setInner("metricSupportCount", resolvedCount + activeCount);
+                setInner("metricSupportLabel", `${resolvedCount} Resolved / ${activeCount} Active`);
+            }
+        }
+
+        function renderDynamicActivityFeeds() {
+            const logsFeed = document.getElementById("riderLogsFeed");
+            const feedbackFeed = document.getElementById("feedbackFeed");
+            const supportFeed = document.getElementById("supportFeed");
+            if (!logsFeed || !feedbackFeed || !supportFeed) return;
+
+            logsFeed.innerHTML = "";
+            feedbackFeed.innerHTML = "";
+            supportFeed.innerHTML = "";
+
+            let visitors = [], feedback = [], tickets = [];
+            if (activeDay === "cumulative") {
+                visitors = [...eventDatabase.day1.visitors, ...eventDatabase.day2.visitors, ...eventDatabase.day3.visitors];
+                feedback = [...eventDatabase.day1.feedback, ...eventDatabase.day2.feedback, ...eventDatabase.day3.feedback];
+                tickets = [...eventDatabase.day1.tickets, ...eventDatabase.day2.tickets, ...eventDatabase.day3.tickets];
+            } else {
+                const db = eventDatabase[activeDay];
+                if (db) { visitors = db.visitors; feedback = db.feedback; tickets = db.tickets; }
+            }
+
+            if (visitors.length === 0) {
+                logsFeed.innerHTML = `<p class="text-[10px] text-slate-500 font-mono py-4 text-center">No attendees logged yet.</p>`;
+            } else {
+                visitors.forEach(v => {
+                    const row = document.createElement("div");
+                    row.className = "flex items-center justify-between p-2.5 bg-slate-900/60 border border-slate-850 rounded-xl text-xs font-mono";
+                    row.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full ${v.appUser ? 'bg-orange-500' : 'bg-slate-600'}"></span>
+                            <div>
+                                <p class="font-bold text-slate-200">${v.name}</p>
+                                <p class="text-[9px] text-slate-500">${v.bike}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[9px] px-1.5 py-0.5 ${v.appUser ? 'bg-orange-950/30 text-orange-400 border border-orange-500/10' : 'bg-slate-950 text-slate-500'} rounded-md">
+                                ${v.appUser ? 'RE APP' : 'NO APP'}
+                            </span>
+                            <p class="text-[9px] text-slate-500 mt-0.5">${v.time}</p>
+                        </div>
+                    `;
+                    logsFeed.appendChild(row);
+                });
+            }
+            setInner("logCount", `${visitors.length} Checked In`);
+
+            if (feedback.length === 0) {
+                feedbackFeed.innerHTML = `<p class="text-[10px] text-slate-500 font-mono text-center py-2">No app critiques written yet.</p>`;
+            } else {
+                feedback.forEach(f => {
+                    const stars = "★".repeat(f.score) + "☆".repeat(5 - f.score);
+                    const row = document.createElement("div");
+                    row.className = "border-b border-slate-900 pb-1.5 last:border-b-0 text-[11px] font-mono";
+                    row.innerHTML = `
+                        <div class="flex items-center justify-between gap-1 mb-0.5">
+                            <span class="text-cyan-400 font-bold">${f.name}</span>
+                            <span class="text-yellow-500 text-[9px]">${stars}</span>
+                        </div>
+                        <p class="text-slate-300 text-[10px] leading-tight">${f.comment}</p>
+                    `;
+                    feedbackFeed.appendChild(row);
+                });
+            }
+
+            if (tickets.length === 0) {
+                supportFeed.innerHTML = `<p class="text-[10px] text-slate-500 font-mono text-center py-2">No support actions generated.</p>`;
+            } else {
+                tickets.forEach(t => {
+                    const row = document.createElement("div");
+                    const isActive = t.status === "active";
+                    row.className = `p-2 bg-slate-900/80 border ${isActive ? 'border-red-500/20' : 'border-emerald-500/15'} rounded-xl text-[11px] font-mono flex flex-col justify-between`;
+                    row.innerHTML = `
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] text-slate-500">${t.id} - ${t.time}</span>
+                            <span class="px-1 py-0.5 text-[8px] font-bold ${isActive ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400'} rounded uppercase">${t.status}</span>
+                        </div>
+                        <p class="font-bold text-slate-300 text-[10px] truncate">${t.category}</p>
+                        <p class="text-slate-400 text-[9px] leading-tight mt-0.5">${t.description}</p>
+                    `;
+                    supportFeed.appendChild(row);
+                });
+            }
+        }
+
+        function registerAttendee() {
+            if (activeDay !== "day3") return;
+            const nameInput = document.getElementById("regName");
+            const bikeSelect = document.getElementById("regBike");
+            const appCheckbox = document.getElementById("regReApp");
+            if (!nameInput || !nameInput.value.trim()) {
+                showToast("Please specify pilot's name.", "red");
+                playChime(300, "sawtooth", 0.15);
+                return;
+            }
+            const name = nameInput.value.trim();
+            const bike = bikeSelect.value;
+            const appUser = appCheckbox.checked;
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            eventDatabase.day3.totalFootfall++;
+            if (appUser) eventDatabase.day3.reAppUsers++;
+            eventDatabase.day3.visitors.unshift({ name, bike, appUser, time: timeStr });
+            nameInput.value = "";
+            appCheckbox.checked = true;
+            renderTouchpointMetrics();
+            renderDynamicActivityFeeds();
+            showToast(`Logged Touchpoint Check-in: ${name}`, "orange");
+            playChime(1000, "sine", 0.1);
+        }
+
+        function selectFeedbackRating(score) {
+            selectedStarRating = score;
+            const starSelector = document.getElementById("ratingSelector");
+            if (!starSelector) return;
+            const buttons = starSelector.querySelectorAll("button");
+            buttons.forEach((btn, idx) => {
+                const btnScore = idx + 1;
+                if (btnScore === score) {
+                    btn.className = "p-1 border border-orange-500/40 bg-orange-950/20 rounded-lg text-xs font-mono w-8 text-center text-orange-400 font-bold";
+                } else {
+                    btn.className = "p-1 border border-slate-800 bg-slate-900 rounded-lg text-xs font-mono w-8 text-center text-slate-500";
+                }
+            });
+            playChime(400 + (score * 50), "triangle", 0.08);
+        }
+
+        function submitFeedback() {
+            if (activeDay !== "day3") return;
+            const commentInput = document.getElementById("feedbackText");
+            if (!commentInput || !commentInput.value.trim()) {
+                showToast("Please insert a review comment.", "red");
+                playChime(300, "sawtooth", 0.15);
+                return;
+            }
+            const nameList = ["Aravind J.", "Sanya M.", "Naveen P.", "Preethi K.", "Rohit V."];
+            const name = nameList[Math.floor(Math.random() * nameList.length)];
+            const comment = commentInput.value.trim();
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const db = eventDatabase.day3;
+            db.csatCount++;
+            db.csatTotal = ((db.csatTotal * (db.csatCount - 1)) + selectedStarRating) / db.csatCount;
+            db.feedback.unshift({ name, comment, score: selectedStarRating, time: timeStr });
+            commentInput.value = "";
+            renderTouchpointMetrics();
+            renderDynamicActivityFeeds();
+            showToast("Review Critique added to feedback database", "emerald");
+            playChime(880, "sine", 0.12);
+        }
+
+        function injectSupportRequest(category, description) {
+            if (activeDay !== "day3") return;
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const ticketId = `T-3${Math.floor(100 + Math.random() * 900)}`;
+            eventDatabase.day3.tickets.unshift({ id: ticketId, category, description, status: "active", time: timeStr });
+            renderTouchpointMetrics();
+            renderDynamicActivityFeeds();
+            showToast(`Opened Support Ticket: ${ticketId}`, "indigo");
+            playChime(440, "sawtooth", 0.15);
+        }
+
+        function resolveSupportRequest() {
+            if (activeDay !== "day3") return;
+            const db = eventDatabase.day3;
+            const activeTicket = db.tickets.find(t => t.status === "active");
+            if (!activeTicket) {
+                showToast("No active tickets remaining.", "orange");
+                playChime(300, "sine", 0.1);
+                return;
+            }
+            activeTicket.status = "resolved";
+            renderTouchpointMetrics();
+            renderDynamicActivityFeeds();
+            showToast(`Resolved Support Ticket: ${activeTicket.id}`, "emerald");
+            playChime(880, "triangle", 0.1);
+        }
+
+        function compileMarkdownSummary() {
+            const day = activeDay.toUpperCase();
+            let text = "";
+            if (activeDay === "cumulative") {
+                const total = eventDatabase.day1.totalFootfall + eventDatabase.day2.totalFootfall + eventDatabase.day3.totalFootfall;
+                const totalAppUsers = eventDatabase.day1.reAppUsers + eventDatabase.day2.reAppUsers + eventDatabase.day3.reAppUsers;
+                const appPercentage = total > 0 ? ((totalAppUsers / total) * 100).toFixed(1) : 0;
+                const ratings = eventDatabase.day1.csatCount + eventDatabase.day2.csatCount + eventDatabase.day3.csatCount;
+                const points = (eventDatabase.day1.csatTotal * eventDatabase.day1.csatCount) +
+                               (eventDatabase.day2.csatTotal * eventDatabase.day2.csatCount) +
+                               (eventDatabase.day3.csatTotal * eventDatabase.day3.csatCount);
+                const avgCsat = ratings > 0 ? ((points / ratings) / 5) * 100 : 0;
+                text = `### ROYAL ENFIELD MOTOVERSE - DIGITAL TEAM STALL
+**CUMULATIVE 3-DAY OPERATIONAL REPORT**
+
+1. OVERALL VISITORS:
+   - Total Registered Attendance: ${total}
+   - Active RE-App Users: ${totalAppUsers} (${appPercentage}% of total)
+
+2. EXPERIENCE SENTIMENT (CSAT):
+   - Merged Rating Performance: ${avgCsat.toFixed(1)}% (${ratings} total survey ratings)
+
+3. STALL CUSTOMER SUPPORT:
+   - Total Tickets Logged: ${eventDatabase.day1.tickets.length + eventDatabase.day2.tickets.length + eventDatabase.day3.tickets.length}
+   - Outstanding Unresolved: ${eventDatabase.day3.tickets.filter(t => t.status === 'active').length}
+   - Successfully Resolved: ${(eventDatabase.day1.tickets.length + eventDatabase.day2.tickets.length + eventDatabase.day3.tickets.length) - eventDatabase.day3.tickets.filter(t => t.status === 'active').length}`;
+            } else {
+                const db = eventDatabase[activeDay];
+                if (!db) return;
+                const appPercent = db.totalFootfall > 0 ? ((db.reAppUsers / db.totalFootfall) * 100).toFixed(1) : 0;
+                const csatPercent = (db.csatTotal / 5) * 100;
+                const activeTicks = db.tickets.filter(t => t.status === 'active').length;
+                const resolvedTicks = db.tickets.filter(t => t.status === 'resolved').length;
+                text = `### ROYAL ENFIELD MOTOVERSE - DIGITAL TEAM STALL
+**SHIFT STATISTICS SUMMARY: ${day}**
+
+1. VISITORS:
+   - Registered Attendance: ${db.totalFootfall} Check-ins
+   - Active RE-App Users: ${db.reAppUsers} (${appPercent}% of daily check-ins)
+
+2. EXPERIENCE SENTIMENT (CSAT):
+   - Satisfaction Rating: ${csatPercent.toFixed(1)}% (${db.csatCount} daily surveys)
+
+3. STALL CUSTOMER SUPPORT:
+   - Active Tickets: ${activeTicks}
+   - Resolved Tickets: ${resolvedTicks}
+
+4. DAILY REVIEWS REGISTERED:
+${db.feedback.map(f => `   - [${f.time}] ${f.name} (${f.score}★): "${f.comment}"`).join('\n')}`;
+            }
+            copyToClipboard(text, `Copied ${day} Dossier!`);
+        }
+
+        function dispatchManagerEmail() {
+            const ff = document.getElementById("metricTotalFootfall")?.innerText || "0";
+            const appUsers = document.getElementById("metricReAppPercentage")?.innerText || "0";
+            const csat = document.getElementById("metricCsat")?.innerText || "100%";
+            const support = document.getElementById("metricSupportLabel")?.innerText || "0";
+            const subject = encodeURIComponent(`Royal Enfield Motoverse Operations Digest - ${activeDay.toUpperCase()}`);
+            const body = encodeURIComponent(`Operations Team,\n\nHerewith is the digital touchpoint performance briefing for ${activeDay.toUpperCase()}:\n\n- Attendance Check-ins: ${ff} (${appUsers})\n- Customer Experience Sentiment: ${csat}\n- Customer Support Logs: ${support}\n\nGenerated via Motoverse Command Hub.`);
+            window.location.href = `mailto:operations@royalenfield.com?subject=${subject}&body=${body}`;
+        }
+
+        function copyToClipboard(text, successMsg) {
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast(successMsg, "emerald");
+            } catch (err) {
+                showToast("Clipboard write error. Please select text manually.", "red");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast(message, type = "orange") {
+            const container = document.getElementById("toastContainer");
+            if (!container) return;
+            const toast = document.createElement("div");
+            const borderColors = {
+                orange: "border-orange-500/30 text-orange-400 bg-slate-950/95",
+                indigo: "border-indigo-500/30 text-indigo-400 bg-slate-950/95",
+                emerald: "border-emerald-500/30 text-emerald-400 bg-slate-950/95",
+                red: "border-red-500/30 text-red-400 bg-slate-950/95"
+            };
+            toast.className = `p-3.5 rounded-xl border ${borderColors[type]} text-xs font-mono flex items-center justify-between gap-3 shadow-lg pointer-events-auto transition-all duration-300 transform translate-y-4 opacity-0`;
+            toast.innerHTML = `<span>${message}</span><button onclick="this.parentElement.remove()" class="hover:text-slate-200"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>`;
+            container.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => toast.classList.remove("translate-y-4", "opacity-0"), 50);
+            setTimeout(() => {
+                toast.classList.add("translate-y-[-10px]", "opacity-0");
+                setTimeout(() => toast.remove(), 350);
+            }, 3000);
+        }
+
+        function triggerOpsAudit() {
+            playChime(587, "sine", 0.2);
+            const modal = document.getElementById("aiModal");
+            const title = document.getElementById("aiModalTitle");
+            const content = document.getElementById("aiModalContent");
+            if (!modal || !content || !title) return;
+            modal.classList.remove("hidden");
+            title.innerText = `OPERATIONAL AUDIT // ${activeDay.toUpperCase()}`;
+            content.innerText = generateOpsReport();
+        }
+
+        function generateOpsReport() {
+            const ff = document.getElementById("metricTotalFootfall")?.innerText || "0";
+            const appRatio = document.getElementById("metricReAppPercentage")?.innerText || "0%";
+            const csatVal = document.getElementById("metricCsat")?.innerText || "100%";
+            const supportBalance = document.getElementById("metricSupportLabel")?.innerText || "0";
+            return `[ROYAL ENFIELD MOTOVERSE DIGITAL STALL - OPERATIONAL AUDIT SUMMARY]
+--------------------------------------------------------------------------------------
+TIMELINE SCOPE: ${activeDay.toUpperCase()}
+
+1. VISITOR DYNAMICS & TOUCHPOINT FOOTFALL
+   Registered attendance for this shift: ${ff} check-ins. Of these, ${appRatio} are actively using the Royal Enfield application. Live app demos are translating well into active user engagements at the stall.
+
+2. CUSTOMER SATISFACTION (CSAT) CRITIQUE
+   Sentiment score of ${csatVal} highlights a strong positive brand impression. Riders highly appreciate direct setup assistance for their app-connected instrument clusters. Minor friction observed around telematics sync latency — valuable data for the product roadmap.
+
+3. TECH SUPPORT DESK ASSESSMENT
+   Support balance: [${supportBalance}]. Primary issues handled involve Bluetooth pairing on iOS devices and manual GPX import errors. Resolution turnaround remains excellent across all three days.
+
+4. ACTION RECOMMENDATIONS FOR NEXT CYCLE
+   - Increase support coverage during peak afternoon check-in hours.
+   - Deploy visual guides specifically for GPX file configuration troubleshooting.
+   - Maintain live-app demonstrations to sustain high RE App conversion rates.
+   - Carry cumulative data into post-event product review with engineering.`;
+        }
+
+        function closeAiModal() {
+            const modal = document.getElementById("aiModal");
+            if (modal) modal.classList.add("hidden");
+        }
+    </script>
+</body>
+</html>

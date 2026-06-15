@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RElive — 3D Route Replay</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syncopate:wght@400;700&display=swap');
+
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #080b0e; }
+  #app { position: relative; height: 100vh; font-family: 'Space Grotesk', sans-serif; }
+  gmp-map-3d { height: 100%; width: 100%; display: block; }
+
+  /* ── Top gradient header ── */
+  #header {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+    padding: 16px 22px 40px;
+    background: linear-gradient(to bottom, rgba(8,11,14,0.92) 0%, transparent 100%);
+    display: flex; align-items: flex-start; gap: 12px; pointer-events: none;
+  }
+  .brand-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.35);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .brand-icon svg { width: 20px; height: 20px; fill: #f97316; }
+  .brand-text {}
+  .brand-name {
+    font-family: 'Syncopate', sans-serif; font-size: 17px; font-weight: 700;
+    letter-spacing: 0.12em; color: #f1f5f9;
+    line-height: 1;
+  }
+  .brand-name span { color: #f97316; }
+  .brand-sub {
+    font-size: 9px; color: rgba(148,163,184,0.6); letter-spacing: 0.18em;
+    font-family: monospace; text-transform: uppercase; margin-top: 3px;
+  }
+
+  /* ── Stats HUD (bottom-left) ── */
+  #hud {
+    position: absolute; bottom: 24px; left: 20px; z-index: 10;
+    background: rgba(8,11,14,0.80); color: #f1f5f9;
+    padding: 16px 20px; border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(249,115,22,0.22);
+    min-width: 210px;
+  }
+  #hud .ride-label {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+  }
+  #hud .live-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: #f97316;
+    box-shadow: 0 0 8px #f97316; animation: blink 1.6s ease-in-out infinite;
+  }
+  #hud .ride-name {
+    font-family: 'Syncopate', sans-serif; font-size: 10px; font-weight: 700;
+    color: #f97316; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  #hud .stats { display: flex; flex-direction: column; gap: 7px; }
+  #hud .stat-row { display: flex; justify-content: space-between; align-items: center; }
+  #hud .stat-key {
+    font-size: 10px; color: rgba(148,163,184,0.55);
+    font-family: monospace; text-transform: uppercase; letter-spacing: 0.12em;
+  }
+  #hud .stat-val { font-size: 13px; font-weight: 600; color: #f1f5f9; font-family: monospace; }
+  #progress-track {
+    margin-top: 14px; height: 3px; border-radius: 999px;
+    background: rgba(255,255,255,0.08); overflow: hidden;
+  }
+  #progress-fill {
+    height: 100%; width: 0%; border-radius: 999px;
+    background: linear-gradient(to right, #f97316, #ffd400);
+    box-shadow: 0 0 6px rgba(249,115,22,0.7);
+    transition: width 0.08s linear;
+  }
+
+  /* ── Replay button (bottom-right, appears after animation) ── */
+  #replay-btn {
+    position: absolute; bottom: 24px; right: 20px; z-index: 10;
+    background: rgba(8,11,14,0.80); border: 1px solid rgba(249,115,22,0.30);
+    color: #f97316; border-radius: 999px; padding: 9px 20px;
+    font-size: 11px; font-family: monospace; letter-spacing: 0.12em;
+    text-transform: uppercase; cursor: pointer; pointer-events: all;
+    backdrop-filter: blur(10px); transition: all 0.25s;
+    opacity: 0; transform: translateY(6px);
+  }
+  #replay-btn.show { opacity: 1; transform: translateY(0); }
+  #replay-btn:hover { background: rgba(249,115,22,0.12); border-color: rgba(249,115,22,0.6); }
+
+  /* ── Status badge (top-right) ── */
+  #status-badge {
+    position: absolute; top: 18px; right: 20px; z-index: 10;
+    background: rgba(8,11,14,0.72); border: 1px solid rgba(30,41,59,0.8);
+    border-radius: 999px; padding: 6px 14px;
+    display: flex; align-items: center; gap: 7px;
+    font-size: 10px; font-family: monospace; color: rgba(148,163,184,0.7);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    backdrop-filter: blur(8px); pointer-events: none;
+  }
+  #status-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: blink 2s ease-in-out infinite; }
+  #status-text {}
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+  /* ── Click-to-load splash ── */
+  #splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:#080b0e;cursor:pointer;transition:opacity 0.3s;}
+  #splash:hover{background:#0f1318;}
+  .sp-icon{font-size:64px;opacity:0.7;}
+  .sp-label{font-size:13px;color:rgba(148,163,184,0.6);text-transform:uppercase;letter-spacing:0.15em;}
+  .sp-btn{padding:10px 28px;border-radius:999px;background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.4);color:#f97316;font-size:13px;letter-spacing:0.08em;}
+</style>
+</head>
+<body>
+<div id="splash" onclick="loadApp()">
+  <div class="sp-icon">🏍️</div>
+  <div class="sp-label">RElive · 3D Route Replay</div>
+  <div class="sp-btn">▶ Launch Demo</div>
+</div>
+<div id="app">
+  <gmp-map-3d id="map" mode="hybrid"></gmp-map-3d>
+
+  <!-- Branding header -->
+  <div id="header">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <div class="brand-name">RE<span>LIVE</span></div>
+      <div class="brand-sub">Ride · Record · Replay in 3D</div>
+    </div>
+  </div>
+
+  <!-- Top-right status -->
+  <div id="status-badge">
+    <span id="status-dot"></span>
+    <span id="status-text">LOADING MAP</span>
+  </div>
+
+  <!-- Stats HUD -->
+  <div id="hud">
+    <div class="ride-label">
+      <div class="live-dot"></div>
+      <div class="ride-name" id="title">SAMPLE ROUTE</div>
+    </div>
+    <div class="stats">
+      <div class="stat-row">
+        <span class="stat-key">Distance</span>
+        <span class="stat-val" id="dist">0.0 km</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-key">Elevation</span>
+        <span class="stat-val" id="ele">— m</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-key">Progress</span>
+        <span class="stat-val" id="pct">0%</span>
+      </div>
+    </div>
+    <div id="progress-track">
+      <div id="progress-fill"></div>
+    </div>
+  </div>
+
+  <!-- Replay button -->
+  <button id="replay-btn" onclick="replayAnimation()">↺ Replay</button>
+</div>
+
+<script>
+/* ── Route data (replaced by GPX on load) ── */
+let route = [
+  { lat: 12.9716, lng: 77.5946, altitude: 920 },
+  { lat: 12.9720, lng: 77.5950, altitude: 920 },
+];
+
+/* ── GPX parser ── */
+function parseGPX(text) {
+  const xml = new DOMParser().parseFromString(text, "application/xml");
+  const pts = [...xml.querySelectorAll("trkpt, rtept, wpt")];
+  if (!pts.length) throw new Error("No track points found in GPX.");
+  return pts.map(pt => ({
+    lat:      parseFloat(pt.getAttribute("lat")),
+    lng:      parseFloat(pt.getAttribute("lon")),
+    altitude: parseFloat(pt.querySelector("ele")?.textContent || "900"),
+  }));
+}
+
+/* ── Helpers ── */
+const R = 6371000;
+const toRad = d => d * Math.PI / 180;
+const toDeg = r => r * 180 / Math.PI;
+
+function haversine(a, b) {
+  const dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
+  const s = Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLng/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+function bearing(a, b) {
+  const y = Math.sin(toRad(b.lng - a.lng)) * Math.cos(toRad(b.lat));
+  const x = Math.cos(toRad(a.lat))*Math.sin(toRad(b.lat)) -
+            Math.sin(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.cos(toRad(b.lng - a.lng));
+  return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
+
+/* ── Map setup ── */
+let map3d, Polyline3D, Marker3D, baseLine, trailLine, headMarker;
+let animating = false, rafId = null;
+
+async function initMap() {
+  const { Polyline3DElement, Marker3DElement } =
+    await google.maps.importLibrary("maps3d");
+  Polyline3D = Polyline3DElement;
+  Marker3D   = Marker3DElement;
+
+  map3d = document.getElementById("map");
+
+  // Load the Adugodi → Pavagada GPX; fall back to sample on error
+  try {
+    const r = await fetch('Adugodi%20TO%20Pavagada%20testing_2024-09-09T18-11-16%20(1).gpx');
+    if (!r.ok) throw new Error('fetch failed');
+    route = parseGPX(await r.text());
+    document.getElementById("title").textContent = "ADUGODI → PAVAGADA";
+  } catch (e) {
+    document.getElementById("title").textContent = "SAMPLE ROUTE";
+  }
+
+  map3d.center  = { ...route[0], altitude: route[0].altitude };
+  map3d.range   = 1500;
+  map3d.tilt    = 67;
+  map3d.heading = bearing(route[0], route[1] || route[0]);
+
+  document.getElementById("status-text").textContent = "LIVE · GOA FEED";
+  document.getElementById("status-dot").style.background = "#f97316";
+
+  drawRoute();
+  // Auto-start fly-through after a brief pause
+  setTimeout(play, 800);
+}
+
+/* ── Smooth motion pipeline ── */
+const SAMPLE_SPACING = 8;
+const SPLINE_STEPS   = 24;
+const CAM_SMOOTH_M   = 600;
+let track = null;
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function catmull(p0, p1, p2, p3, t) {
+  const t2 = t*t, t3 = t2*t;
+  return 0.5 * ((2*p1) + (-p0 + p2)*t +
+                (2*p0 - 5*p1 + 4*p2 - p3)*t2 +
+                (-p0 + 3*p1 - 3*p2 + p3)*t3);
+}
+
+function smoothRaw(pts, win = 2) {
+  if (pts.length < 5) return pts.map(p => ({ ...p }));
+  const out = [];
+  for (let i = 0; i < pts.length; i++) {
+    if (i === 0 || i === pts.length - 1) { out.push({ ...pts[i] }); continue; }
+    let la = 0, ln = 0, al = 0, n = 0;
+    for (let j = -win; j <= win; j++) {
+      const q = pts[i + j];
+      if (!q) continue;
+      la += q.lat; ln += q.lng; al += q.altitude; n++;
+    }
+    out.push({ lat: la / n, lng: ln / n, altitude: al / n });
+  }
+  return out;
+}
+
+function prepareTrack() {
+  const pts = smoothRaw(route);
+  if (pts.length < 2) { track = { samples: pts.map(p => ({...p, dist:0})), total: 0 }; return; }
+
+  const dense = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i-1] || pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i+1];
+    const p3 = pts[i+2] || pts[i+1];
+    for (let s = 0; s < SPLINE_STEPS; s++) {
+      const t = s / SPLINE_STEPS;
+      dense.push({
+        lat:      catmull(p0.lat, p1.lat, p2.lat, p3.lat, t),
+        lng:      catmull(p0.lng, p1.lng, p2.lng, p3.lng, t),
+        altitude: catmull(p0.altitude, p1.altitude, p2.altitude, p3.altitude, t),
+      });
+    }
+  }
+  dense.push({ ...pts[pts.length - 1] });
+
+  let total = 0; dense[0].dist = 0;
+  for (let i = 1; i < dense.length; i++) {
+    total += haversine(dense[i-1], dense[i]);
+    dense[i].dist = total;
+  }
+
+  const samples = [];
+  let j = 0;
+  for (let target = 0; target < total; target += SAMPLE_SPACING) {
+    while (j < dense.length - 2 && dense[j+1].dist < target) j++;
+    const a = dense[j], b = dense[j+1];
+    const span = b.dist - a.dist;
+    const t = span === 0 ? 0 : (target - a.dist) / span;
+    samples.push({
+      lat: lerp(a.lat, b.lat, t),
+      lng: lerp(a.lng, b.lng, t),
+      altitude: lerp(a.altitude, b.altitude, t),
+      dist: target,
+    });
+  }
+  samples.push({ ...dense[dense.length - 1], dist: total });
+
+  const N = samples.length;
+  const win = Math.max(1, Math.min(Math.round(CAM_SMOOTH_M / SAMPLE_SPACING), N - 1));
+  const preLat = new Float64Array(N + 1), preLng = new Float64Array(N + 1);
+  for (let i = 0; i < N; i++) {
+    preLat[i + 1] = preLat[i] + samples[i].lat;
+    preLng[i + 1] = preLng[i] + samples[i].lng;
+  }
+  const camPath = new Array(N);
+  for (let i = 0; i < N; i++) {
+    const a = Math.max(0, i - win), b = Math.min(N - 1, i + win), cnt = b - a + 1;
+    camPath[i] = { lat: (preLat[b + 1] - preLat[a]) / cnt,
+                   lng: (preLng[b + 1] - preLng[a]) / cnt };
+  }
+  track = { samples, total, camPath };
+}
+
+function camSampleAt(dist) {
+  const cp = track.camPath;
+  dist = Math.max(0, Math.min(dist, track.total));
+  const idx = Math.min(Math.floor(dist / SAMPLE_SPACING), cp.length - 2);
+  const t = Math.min((dist - idx * SAMPLE_SPACING) / SAMPLE_SPACING, 1);
+  const a = cp[idx], b = cp[idx + 1];
+  return { lat: lerp(a.lat, b.lat, t), lng: lerp(a.lng, b.lng, t) };
+}
+
+function sampleAt(dist) {
+  const s = track.samples;
+  dist = Math.max(0, Math.min(dist, track.total));
+  const idx = Math.min(Math.floor(dist / SAMPLE_SPACING), s.length - 2);
+  const a = s[idx], b = s[idx + 1];
+  const span = b.dist - a.dist;
+  const t = span === 0 ? 0 : (dist - a.dist) / span;
+  return {
+    lat: lerp(a.lat, b.lat, t),
+    lng: lerp(a.lng, b.lng, t),
+    altitude: lerp(a.altitude, b.altitude, t),
+  };
+}
+
+function headingAt(dist) {
+  const LOOK = 25;
+  return bearing(sampleAt(dist), sampleAt(Math.min(dist + LOOK, track.total)));
+}
+
+function drawRoute() {
+  if (!track) prepareTrack();
+  [baseLine, trailLine, headMarker].forEach(o => o && o.remove());
+  const all = track.samples.map(p => ({ lat: p.lat, lng: p.lng }));
+  const start = all[0];
+
+  baseLine = new Polyline3D({
+    altitudeMode: "CLAMP_TO_GROUND",
+    strokeColor: "rgba(255,255,255,0.45)",
+    strokeWidth: 6,
+    drawsOccludedSegments: true,
+    coordinates: all,
+  });
+  map3d.append(baseLine);
+
+  trailLine = new Polyline3D({
+    altitudeMode: "CLAMP_TO_GROUND",
+    strokeColor: "#ffd400",
+    strokeWidth: 11,
+    outerColor: "#ff7a00",
+    outerWidth: 0.3,
+    drawsOccludedSegments: true,
+    coordinates: [start, start],
+  });
+  map3d.append(trailLine);
+
+  headMarker = new Marker3D({ altitudeMode: "CLAMP_TO_GROUND", position: start });
+  map3d.append(headMarker);
+}
+
+/* ── Animation ── */
+const SEC_PER_KM = 0.6;
+const MIN_SEC    = 12;
+const MAX_SEC    = 150;
+const FRAME_TAU  = 320;
+
+function play() {
+  if (animating) return;
+  if (!track) prepareTrack();
+  animating = true;
+
+  // Hide replay button when playing
+  document.getElementById("replay-btn").classList.remove("show");
+
+  const total = track.total;
+  const S = track.samples;
+  const durationMs = Math.min(MAX_SEC, Math.max(MIN_SEC, (total/1000) * SEC_PER_KM)) * 1000;
+  const speed = total / (durationMs / 1000);
+  const baseRange = Math.max(450, Math.min(speed * 1.4, 6000)) * 12;
+  const baseTilt  = 64;
+  const viewHeading = bearing(S[0], S[S.length - 1]);
+
+  let minLat=Infinity, maxLat=-Infinity, minLng=Infinity, maxLng=-Infinity;
+  for (const s of S) {
+    if (s.lat < minLat) minLat = s.lat; if (s.lat > maxLat) maxLat = s.lat;
+    if (s.lng < minLng) minLng = s.lng; if (s.lng > maxLng) maxLng = s.lng;
+  }
+  const ovCenter = { lat: (minLat+maxLat)/2, lng: (minLng+maxLng)/2 };
+  const diag = haversine({lat:minLat,lng:minLng}, {lat:maxLat,lng:maxLng});
+  const ovRange = Math.max(900, Math.min(diag * 1.15, 1500000));
+  const ovTilt  = 48;
+
+  const PAUSE = 700, OUTRO = 4200;
+  const END_FLY = durationMs, END_PAUSE = END_FLY + PAUSE, END_ALL = END_PAUSE + OUTRO;
+
+  let startTs = null, prevTs = null;
+  let camRange = baseRange * 1.5;
+  let camTilt = baseTilt - 6, camAlt = S[0].altitude || 0;
+  let outroFrom = null;
+
+  document.getElementById("title").textContent =
+    "MY RIDE · " + (total/1000).toFixed(1) + " KM";
+
+  function frame(ts) {
+    if (!animating) return;
+    if (startTs === null) startTs = ts;
+    const dt = prevTs === null ? 16 : (ts - prevTs);
+    prevTs = ts;
+    const elapsed = ts - startTs;
+    const kF = 1 - Math.exp(-dt / FRAME_TAU);
+
+    if (elapsed <= END_PAUSE) {
+      const raw   = Math.min(elapsed / END_FLY, 1);
+      const eased = raw * raw * (3 - 2 * raw);
+      const traveled = eased * total;
+      const p = sampleAt(traveled);
+      const c = camSampleAt(traveled);
+
+      const idx = Math.min(Math.floor(traveled / SAMPLE_SPACING), S.length - 1);
+      const coords = S.slice(0, idx + 1).map(s => ({ lat: s.lat, lng: s.lng }));
+      coords.push({ lat: p.lat, lng: p.lng });
+      trailLine.coordinates = coords;
+      headMarker.position = { lat: p.lat, lng: p.lng };
+
+      const introOut    = Math.max(0, 1 - Math.min(raw, 1 - raw) / 0.1);
+      const targetRange = baseRange * (1 + 0.5 * introOut);
+      const targetTilt  = baseTilt - 6 * introOut;
+      camRange += (targetRange - camRange) * kF;
+      camTilt  += (targetTilt  - camTilt ) * kF;
+      camAlt   += ((p.altitude || 0) - camAlt) * kF;
+
+      map3d.center  = { lat: c.lat, lng: c.lng, altitude: camAlt };
+      map3d.heading = viewHeading;
+      map3d.tilt    = camTilt;
+      map3d.range   = camRange;
+      map3d.roll    = 0;
+
+      document.getElementById("dist").textContent = (traveled/1000).toFixed(2) + " km";
+      document.getElementById("ele").textContent  = Math.round(p.altitude) + " m";
+      document.getElementById("pct").textContent  = Math.round(100 * eased) + "%";
+      document.getElementById("progress-fill").style.width = (100 * eased) + "%";
+      rafId = requestAnimationFrame(frame);
+
+    } else if (elapsed <= END_ALL) {
+      if (!outroFrom) {
+        const last = camSampleAt(total);
+        outroFrom = { lat: last.lat, lng: last.lng, alt: camAlt, range: camRange, tilt: camTilt };
+      }
+      const o = (elapsed - END_PAUSE) / OUTRO;
+      const e = o * o * (3 - 2 * o);
+      map3d.center  = {
+        lat: lerp(outroFrom.lat, ovCenter.lat, e),
+        lng: lerp(outroFrom.lng, ovCenter.lng, e),
+        altitude: lerp(outroFrom.alt, 0, e),
+      };
+      map3d.heading = viewHeading;
+      map3d.tilt    = lerp(outroFrom.tilt, ovTilt, e);
+      map3d.range   = lerp(outroFrom.range, ovRange, e);
+      map3d.roll    = 0;
+      document.getElementById("pct").textContent = "100%";
+      document.getElementById("progress-fill").style.width = "100%";
+      rafId = requestAnimationFrame(frame);
+
+    } else {
+      animating = false;
+      // Show replay button, then auto-loop after 5 s
+      document.getElementById("replay-btn").classList.add("show");
+      setTimeout(() => {
+        drawRoute();
+        play();
+      }, 5000);
+    }
+  }
+  rafId = requestAnimationFrame(frame);
+}
+
+function replayAnimation() {
+  if (animating) return;
+  drawRoute();
+  play();
+}
+</script>
+
+<script>
+  function loadApp() {
+    const s = document.getElementById('splash');
+    s.style.opacity = '0';
+    setTimeout(() => {
+      s.style.display = 'none';
+      // Auto-dismiss Google Maps alpha notice once map loads
+      new MutationObserver(function(_, obs) {
+        const btn = [...document.querySelectorAll('a,button')].find(
+          el => el.textContent.trim() === 'Dismiss'
+        );
+        if (btn) { btn.click(); obs.disconnect(); }
+      }).observe(document.documentElement, { childList: true, subtree: true });
+      // Load Maps API and start route replay
+      (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+        key: "AIzaSyBQ5XNINrnzgJ5enEYSwouG2dfwJNYTs80",
+        v: "alpha",
+      });
+      initMap();
+    }, 300);
+  }
+</script>
+</body>
+</html>

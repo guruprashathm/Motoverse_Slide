@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:#080b0e;font-family:'Inter',system-ui,sans-serif;color:#e2e8f0}
+
+  /* ── LAYOUT ── */
+  .page{display:grid;grid-template-rows:auto 1fr auto;height:100vh;gap:0}
+
+  /* ── TOPBAR ── */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 24px;
+    background:rgba(15,20,30,0.95);
+    border-bottom:1px solid rgba(249,115,22,0.2);
+  }
+  .topbar-left{display:flex;align-items:center;gap:14px}
+  .live-dot{
+    width:8px;height:8px;border-radius:50%;background:#ef4444;
+    animation:pulse-red 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.5)}50%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
+  .live-label{font-size:10px;font-weight:700;color:#ef4444;letter-spacing:0.12em;text-transform:uppercase}
+  .brand{font-size:15px;font-weight:700;color:#f97316;letter-spacing:0.04em}
+  .brand span{color:rgba(255,255,255,0.4);font-weight:400}
+  .tagline{font-size:11px;color:rgba(148,163,184,0.6);letter-spacing:0.06em}
+
+  /* ── MAIN GRID ── */
+  .main{display:grid;grid-template-columns:320px 1fr;gap:0;overflow:hidden}
+
+  /* ── LEFT PANEL ── */
+  .left-panel{
+    display:flex;flex-direction:column;gap:0;
+    padding:20px 18px;
+    background:rgba(10,14,22,0.8);
+    border-right:1px solid rgba(255,255,255,0.06);
+    overflow-y:auto;
+  }
+  .hero-text{
+    font-size:17px;font-weight:700;line-height:1.4;
+    color:#fff;margin-bottom:6px;
+  }
+  .hero-sub{
+    font-size:11px;color:rgba(148,163,184,0.55);
+    line-height:1.5;margin-bottom:18px;
+  }
+  .section-label{
+    font-size:8px;font-weight:700;color:rgba(249,115,22,0.5);
+    letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;
+  }
+  .feature-card{
+    display:flex;gap:12px;align-items:flex-start;
+    padding:12px 14px;border-radius:10px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.06);
+    margin-bottom:8px;
+    transition:border-color 0.3s,background 0.3s;
+  }
+  .feature-card:hover{background:rgba(249,115,22,0.06);border-color:rgba(249,115,22,0.25)}
+  .feature-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+  .feature-title{font-size:12px;font-weight:600;color:#f97316;margin-bottom:3px}
+  .feature-desc{font-size:10px;color:rgba(148,163,184,0.65);line-height:1.45}
+
+  .divider{height:1px;background:rgba(255,255,255,0.05);margin:14px 0}
+
+  .bikes-from{margin-top:4px}
+  .bikes-from .section-label{margin-bottom:8px}
+  .city-pills{display:flex;flex-wrap:wrap;gap:5px}
+  .city-pill{
+    font-size:9px;padding:3px 8px;border-radius:999px;
+    background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);
+    color:rgba(249,115,22,0.8);
+  }
+
+  /* ── RIGHT PANEL ── */
+  .right-panel{
+    display:flex;flex-direction:column;gap:0;
+    padding:18px 20px 14px;
+    overflow:hidden;
+  }
+  .feed-header{margin-bottom:8px}
+  .feed-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+  .feed-subtitle{font-size:10px;color:rgba(148,163,184,0.4);margin-bottom:8px}
+  .filter-pills{display:flex;gap:5px}
+  .filter-pill{
+    font-size:9px;padding:3px 12px;border-radius:999px;cursor:pointer;
+    border:1px solid rgba(255,255,255,0.1);color:rgba(148,163,184,0.5);
+    transition:all 0.2s;
+  }
+  .filter-pill.active{background:rgba(249,115,22,0.15);border-color:rgba(249,115,22,0.4);color:#f97316}
+
+  .feed-list{
+    flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;
+    padding-right:4px;
+  }
+  .feed-list::-webkit-scrollbar{width:3px}
+  .feed-list::-webkit-scrollbar-track{background:transparent}
+  .feed-list::-webkit-scrollbar-thumb{background:rgba(249,115,22,0.2);border-radius:3px}
+
+  /* Card — left-border accent, single column layout */
+  .event-card{
+    padding:9px 12px;border-radius:8px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.06);
+    border-left:3px solid #f97316;
+    animation:slide-in 0.4s ease;
+    position:relative;
+  }
+  @keyframes slide-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  .event-card.new-card{background:rgba(249,115,22,0.04)}
+  .event-card.new-card::after{
+    content:'NEW';position:absolute;top:7px;right:10px;
+    font-size:7px;font-weight:700;color:#f97316;letter-spacing:0.1em;opacity:0.7;
+  }
+
+  /* Row 1: icon · name · city · bike-tag · time */
+  .ev-row1{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .ev-icon{font-size:12px;flex-shrink:0;line-height:1}
+  .ev-name{font-size:12px;font-weight:600;color:#fff;flex-shrink:0}
+  .ev-sep{color:rgba(148,163,184,0.25);flex-shrink:0;font-size:10px}
+  .ev-city{font-size:10px;color:rgba(148,163,184,0.45);flex-shrink:0}
+  .ev-bike{
+    font-size:8px;padding:1px 7px;border-radius:999px;
+    background:rgba(255,255,255,0.05);color:rgba(148,163,184,0.45);
+    border:1px solid rgba(255,255,255,0.07);flex-shrink:0;
+  }
+  .ev-time{margin-left:auto;font-size:9px;color:rgba(100,116,139,0.55);flex-shrink:0}
+
+  /* Row 2: description */
+  .ev-desc{font-size:11px;color:rgba(203,213,225,0.75);margin-bottom:4px;padding-left:20px;line-height:1.35}
+
+  /* Row 3: status */
+  .ev-status{display:flex;align-items:center;gap:5px;padding-left:20px}
+  .status-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;background:#f97316}
+  .status-text{font-size:10px;font-weight:500;color:#f97316}
+
+  /* ── STATS BAR ── */
+  .stats-bar{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    gap:0;
+    background:rgba(10,14,22,0.95);
+    border-top:1px solid rgba(249,115,22,0.15);
+    padding:10px 24px;
+  }
+  .stat{display:flex;align-items:center;gap:10px}
+  .stat+.stat{border-left:1px solid rgba(255,255,255,0.05);padding-left:20px}
+  .stat-icon{font-size:14px;opacity:0.7}
+  .stat-val{font-size:16px;font-weight:700;color:#f97316}
+  .stat-lbl{font-size:9px;color:rgba(148,163,184,0.4);text-transform:uppercase;letter-spacing:0.09em;margin-top:1px}
+
+  /* ── TYPE COLORS — left border + status ── */
+  .type-rsa    {border-left-color:#ef4444}
+  .type-fuel   {border-left-color:#f59e0b}
+  .type-engine {border-left-color:#f97316}
+  .type-track  {border-left-color:#34d399}
+  .type-battery{border-left-color:#a855f7}
+
+  .type-rsa    .status-dot,.type-rsa    .status-text{background:#ef4444;color:#ef4444}
+  .type-fuel   .status-dot,.type-fuel   .status-text{background:#f59e0b;color:#f59e0b}
+  .type-engine .status-dot,.type-engine .status-text{background:#f97316;color:#f97316}
+  .type-track  .status-dot,.type-track  .status-text{background:#34d399;color:#34d399}
+  .type-battery.status-dot,.type-battery .status-text{background:#a855f7;color:#a855f7}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="live-dot"></div>
+      <div class="live-label">Live</div>
+      <div class="brand">GRID Support <span>· Motoverse 2026</span></div>
+    </div>
+    <div class="tagline">Proactive rider assistance · Powered by RE Connected Services</div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <div class="hero-text">Every rider who rode to Motoverse is covered.</div>
+      <div class="hero-sub">Hundreds of RE bikes arrived from across India. On long rides, anything can happen — GRID ensures no rider is left stranded.</div>
+
+      <div class="section-label">How GRID protects you</div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <div>
+          <div class="feature-title">Proactive Monitoring</div>
+          <div class="feature-desc">The support team reaches out before you even raise a flag — if your bike shows signs of a technical issue.</div>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🆘</div>
+        <div>
+          <div class="feature-title">Real-time RSA</div>
+          <div class="feature-desc">One tap inside the RE App connects you to Roadside Assistance — dispatched to your exact GPS location.</div>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚠️</div>
+        <div>
+          <div class="feature-title">Vehicle Alerts</div>
+          <div class="feature-desc">Fuel level, battery status, and critical parameters are monitored and pushed to you in real time.</div>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📍</div>
+        <div>
+          <div class="feature-title">Safety Tracking</div>
+          <div class="feature-desc">Live location, engine on/off alerts, and last parked location — keeping you and your family informed.</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="bikes-from">
+        <div class="section-label">Riders at Motoverse from</div>
+        <div class="city-pills">
+          <div class="city-pill">Bengaluru</div>
+          <div class="city-pill">Hyderabad</div>
+          <div class="city-pill">Chennai</div>
+          <div class="city-pill">Mumbai</div>
+          <div class="city-pill">Delhi</div>
+          <div class="city-pill">Pune</div>
+          <div class="city-pill">Coimbatore</div>
+          <div class="city-pill">Kochi</div>
+          <div class="city-pill">Kolkata</div>
+          <div class="city-pill">Jaipur</div>
+          <div class="city-pill">Chandigarh</div>
+          <div class="city-pill">+more</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <div class="feed-header">
+        <div class="feed-title">Live Support Activity</div>
+        <div class="feed-subtitle">Motoverse 2026 — real-time GRID events across attending riders</div>
+        <div class="filter-pills">
+          <div class="filter-pill active">All</div>
+          <div class="filter-pill">RSA</div>
+          <div class="filter-pill">Alerts</div>
+          <div class="filter-pill">Tracking</div>
+        </div>
+      </div>
+      <div class="feed-list" id="feed"></div>
+    </div>
+
+  </div><!-- /main -->
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-icon">🏍️</div>
+      <div>
+        <div class="stat-val" id="stat-riders">0</div>
+        <div class="stat-lbl">Riders Protected Today</div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon">🆘</div>
+      <div>
+        <div class="stat-val" id="stat-rsa">0</div>
+        <div class="stat-lbl">RSA Dispatches</div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon">⚠️</div>
+      <div>
+        <div class="stat-val" id="stat-alerts">0</div>
+        <div class="stat-lbl">Alerts Sent</div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon">⚡</div>
+      <div>
+        <div class="stat-val" id="stat-response">—</div>
+        <div class="stat-lbl">Avg RSA Response</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+const events = [
+  { name:'Arjun K.', city:'Bengaluru', bike:'Himalayan 450', type:'rsa',
+    icon:'🆘', desc:'RSA requested — breakdown on NH48, 32 km from venue',
+    status:'Team dispatched · 9 min ETA', time:'just now' },
+  { name:'Priya M.', city:'Hyderabad', bike:'Meteor 350', type:'fuel',
+    icon:'⛽', desc:'Fuel level critically low detected — alert sent proactively',
+    status:'Alert delivered · Nearest pump 1.2 km', time:'2m ago' },
+  { name:'Ravi S.', city:'Coimbatore', bike:'Interceptor 650', type:'engine',
+    icon:'⚙️', desc:'Engine parameter anomaly detected — support team reached out',
+    status:'Issue resolved · Ride-safe confirmed', time:'5m ago' },
+  { name:'Meena T.', city:'Mumbai', bike:'Classic 350', type:'track',
+    icon:'📍', desc:'Live location shared with family for Motoverse ride',
+    status:'Tracking active · All clear', time:'7m ago' },
+  { name:'Karthik R.', city:'Delhi', bike:'Super Meteor 650', type:'battery',
+    icon:'🔋', desc:'Battery health monitored — status normal throughout ride',
+    status:'All systems healthy', time:'10m ago' },
+  { name:'Surya P.', city:'Pune', bike:'Guerrilla 450', type:'track',
+    icon:'📍', desc:'Engine-off alert triggered — parked at Motoverse venue',
+    status:'Last location saved · Parked safely', time:'13m ago' },
+  { name:'Anjali V.', city:'Chennai', bike:'Himalayan 450', type:'rsa',
+    icon:'🆘', desc:'Tyre pressure warning — RSA requested near toll booth',
+    status:'Assistance on the way · 6 min ETA', time:'16m ago' },
+  { name:'Dinesh N.', city:'Kochi', bike:'Bear 650', type:'engine',
+    icon:'⚙️', desc:'Proactive outreach — coolant temp elevated during highway run',
+    status:'Rider advised · Cooling stop taken', time:'19m ago' },
+  { name:'Lakshmi A.', city:'Jaipur', bike:'Bullet 350', type:'fuel',
+    icon:'⛽', desc:'Low fuel alert sent — 80 km from Motoverse venue',
+    status:'Alert delivered · Refuelled successfully', time:'22m ago' },
+  { name:'Vijay R.', city:'Chandigarh', bike:'Continental GT 650', type:'track',
+    icon:'📍', desc:'Ride tracking active — 420 km journey to venue monitored',
+    status:'Arrived safely · Tracking ended', time:'25m ago' },
+  { name:'Nisha K.', city:'Kolkata', bike:'Scram 411', type:'rsa',
+    icon:'🆘', desc:'Chain slack alert — RSA dispatched for roadside fix',
+    status:'Resolved in 14 min · Rider continuing', time:'28m ago' },
+  { name:'Arun B.', city:'Mysuru', bike:'Hunter 350', type:'battery',
+    icon:'🔋', desc:'Electrical system monitored — voltage spike flagged and cleared',
+    status:'System stable · No action needed', time:'31m ago' },
+];
+
+// Shuffle so it feels different each load
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5) }
+const pool = shuffle(events);
+let shown = 0;
+
+function makeCard(ev, isNew) {
+  const div = document.createElement('div');
+  div.className = `event-card type-${ev.type}${isNew?' new-card':''}`;
+  div.innerHTML = `
+    <div class="ev-row1">
+      <span class="ev-icon">${ev.icon}</span>
+      <span class="ev-name">${ev.name}</span>
+      <span class="ev-sep">·</span>
+      <span class="ev-city">${ev.city}</span>
+      <span class="ev-bike">${ev.bike}</span>
+      <span class="ev-time">${ev.time}</span>
+    </div>
+    <div class="ev-desc">${ev.desc}</div>
+    <div class="ev-status">
+      <div class="status-dot"></div>
+      <div class="status-text">${ev.status}</div>
+    </div>
+  `;
+  return div;
+}
+
+function addCard() {
+  const feed = document.getElementById('feed');
+  const ev = pool[shown % pool.length];
+  shown++;
+  const card = makeCard(ev, true);
+  feed.insertBefore(card, feed.firstChild);
+  // Remove "new" styling after 2s
+  setTimeout(() => card.classList.remove('new-card'), 2000);
+  // Cap list at 10 cards
+  if (feed.children.length > 10) feed.removeChild(feed.lastChild);
+}
+
+// Animate stats counters
+function animateCounter(id, target, suffix='', duration=1800) {
+  const el = document.getElementById(id);
+  let start = 0;
+  const step = target / (duration / 16);
+  const timer = setInterval(() => {
+    start = Math.min(start + step, target);
+    el.textContent = Math.floor(start).toLocaleString() + suffix;
+    if (start >= target) clearInterval(timer);
+  }, 16);
+}
+
+// Initial cards (show 5 immediately)
+for (let i = 0; i < 5; i++) {
+  const ev = pool[i];
+  shown++;
+  document.getElementById('feed').appendChild(makeCard(ev, false));
+}
+
+// Add new cards every 4 seconds
+setInterval(addCard, 4000);
+
+// Animate stats on load
+setTimeout(() => {
+  animateCounter('stat-riders', 2847);
+  animateCounter('stat-rsa', 38);
+  animateCounter('stat-alerts', 194);
+  setTimeout(() => { document.getElementById('stat-response').textContent = '6.2 min'; }, 1200);
+}, 400);
+</script>
+</body>
+</html>
