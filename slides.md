@@ -94,48 +94,6 @@ layout: default
 transition: fade
 ---
 
-# Designing a digital experience for every level of rider adoption.
-
-<div class="text-gray-400 text-sm mb-3">Three visitor tiers — each routed to the stall zone that meets them where they are.</div>
-
-<div class="flex flex-col gap-2">
-  <div v-click class="flex items-start gap-3 p-3 rounded-2xl border border-amber-700/30 bg-amber-900/10">
-    <div class="shrink-0 text-xl mt-0.5">🙋</div>
-    <div class="flex-1">
-      <div class="flex items-center gap-3 mb-0.5">
-        <div class="font-bold text-amber-300 text-sm">Casual RE Fans</div>
-        <div class="text-xs text-gray-500">→ Entry-level engagement</div>
-      </div>
-      <div class="text-xs text-gray-300">High-visibility, hands-on tech. Connected to <strong class="text-amber-300">The Navigation Lab</strong> — experiences that work without any prior app knowledge. See a 3D ride replay, play a navigation game, find your bike.</div>
-    </div>
-  </div>
-  <div v-click class="flex items-start gap-3 p-3 rounded-2xl border border-orange-700/30 bg-orange-900/10">
-    <div class="shrink-0 text-xl mt-0.5">📱</div>
-    <div class="flex-1">
-      <div class="flex items-center gap-3 mb-0.5">
-        <div class="font-bold text-orange-300 text-sm">Daily App Users</div>
-        <div class="text-xs text-gray-500">→ Deepening engagement</div>
-      </div>
-      <div class="text-xs text-gray-300">Optimising current use and previewing new features. Connected to <strong class="text-orange-300">The Future Lounge</strong> — interactive roadmap, idea submission, and exclusive previews of what's being built next.</div>
-    </div>
-  </div>
-  <div v-click class="flex items-start gap-3 p-3 rounded-2xl border border-cyan-700/30 bg-cyan-900/10">
-    <div class="shrink-0 text-xl mt-0.5">🛡️</div>
-    <div class="flex-1">
-      <div class="flex items-center gap-3 mb-0.5">
-        <div class="font-bold text-cyan-300 text-sm">Connected Vehicle Subscribers</div>
-        <div class="text-xs text-gray-500">→ Deep-dive engagement</div>
-      </div>
-      <div class="text-xs text-gray-300">Deep telemetry and Wingman integration. Connected to <strong class="text-cyan-300">Wingman HQ</strong> — live Wingman data, rider persona analysis, and experiences built for people already in the ecosystem.</div>
-    </div>
-  </div>
-</div>
-
----
-layout: default
-transition: fade
----
-
 # Blueprinting the Digital Ecosystem Stall
 
 <div class="text-gray-400 text-sm mb-3">Three active experience zones — each anchored to a distinct product capability.</div>
@@ -172,6 +130,78 @@ transition: fade
     </div>
   </div>
 </div>
+
+---
+layout: default
+transition: fade
+---
+
+<TentReveal>
+<div class="h-full flex flex-col gap-2 pb-1">
+  <div class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Motoverse Digital Stall — Physical Layout Canvas</div>
+  <div class="flex-1 border-2 border-gray-500/50 rounded-xl flex flex-col overflow-hidden">
+    <div class="flex justify-center items-center py-2.5 border-b-2 border-gray-600/50 bg-slate-800/40">
+      <div class="border-2 border-gray-400/60 rounded px-16 py-1.5 bg-slate-900/60">
+        <span class="font-black tracking-[0.6em] text-sm text-gray-200 uppercase">SCREEN</span>
+      </div>
+    </div>
+    <div class="flex-1 flex">
+      <div class="w-1/5 border-r-2 border-gray-600/50 flex flex-col bg-cyan-950/20">
+        <div class="text-center py-2 border-b border-gray-700/40">
+          <div class="text-[9px] font-black tracking-[0.3em] text-cyan-400 uppercase">🔌 Connected</div>
+        </div>
+        <div class="flex-1 flex flex-col justify-around px-3 py-3">
+          <div class="flex flex-col items-center gap-1 p-2 rounded-xl border border-cyan-500/40 bg-cyan-900/20 text-center">
+            <img src="./bike%20assets/wingman.png" class="h-8 w-auto object-contain" alt="Wingman" />
+            <div class="text-base font-black text-cyan-300 leading-none">3.0</div>
+          </div>
+          <div class="flex flex-col items-center gap-1 p-2 rounded-xl border border-blue-500/40 bg-blue-900/20 text-center">
+            <img src="./bike%20assets/wingman.png" class="h-8 w-auto object-contain opacity-80" alt="Wingman" />
+            <div class="text-base font-black text-blue-300 leading-none">2.0</div>
+          </div>
+          <div class="flex flex-col items-center gap-1 p-2 rounded-xl border border-gray-600/40 bg-gray-800/20 text-center">
+            <img src="./bike%20assets/wingman.png" class="h-8 w-auto object-contain opacity-40 grayscale" alt="Wingman" />
+            <div class="text-base font-black text-gray-400 leading-none">1.0</div>
+          </div>
+        </div>
+      </div>
+      <div class="flex-1 flex flex-col bg-purple-950/10">
+        <div class="text-center py-2 border-b border-gray-700/40">
+          <div class="text-[9px] font-black tracking-[0.3em] text-purple-400 uppercase">🚀 Future Lounge</div>
+        </div>
+        <div class="flex-1 flex items-center justify-center px-4">
+          <img src="./bike%20assets/future_lounge.png" class="max-h-full max-w-full object-contain" alt="Future Lounge" />
+        </div>
+        <div class="text-center py-2 border-t border-gray-700/40">
+          <span class="text-[9px] uppercase tracking-widest text-gray-600 font-semibold">Timeline ↑</span>
+        </div>
+      </div>
+      <div class="w-1/4 border-l-2 border-gray-600/50 flex flex-col bg-orange-950/10">
+        <div class="text-center py-2 border-b border-gray-700/40">
+          <div class="text-[9px] font-black tracking-[0.3em] text-orange-400 uppercase">🧭 Navigation</div>
+        </div>
+        <div class="flex-1 flex flex-col justify-around px-3 py-3">
+          <div class="flex flex-col items-center gap-1 p-3 rounded-xl border border-purple-500/40 bg-purple-900/20 text-center">
+            <img src="./bike%20assets/tripper_duo.png" class="h-14 w-14 object-contain" alt="Tripper Duo" />
+            <div class="text-[10px] font-bold text-purple-300 mt-1">Tripper Duo</div>
+          </div>
+          <div class="flex flex-col items-center gap-1 p-2 rounded-xl border border-orange-500/40 bg-orange-900/20 text-center">
+            <img src="./bike%20assets/tripper%20dash.png" class="h-14 w-14 object-contain" alt="Tripper Dash" />
+            <div class="text-[10px] font-bold text-orange-300 mt-1">Tripper Dash</div>
+          </div>
+          <div class="flex flex-col items-center gap-1 p-2 rounded-xl border border-cyan-500/40 bg-cyan-900/20 text-center">
+            <img src="./bike%20assets/tripper%20pod.png" class="h-14 w-14 object-contain" alt="Tripper Pod" />
+            <div class="text-[10px] font-bold text-cyan-300 mt-1">Tripper pod</div>
+          </div>
+        </div>
+        <div class="text-center py-2 border-t border-gray-700/40">
+          <span class="text-[8px] uppercase tracking-widest text-gray-600 font-semibold">Timeline ↑</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</TentReveal>
 
 ---
 layout: default
@@ -530,6 +560,7 @@ RE's native navigation ecosystem — from the iconic round pod to the full-map D
 ---
 layout: two-cols
 transition: fade
+hide: true
 ---
 
 # Tripper Products at Motoverse
@@ -673,16 +704,14 @@ The numbers that prove riders who try it, keep using it. Real telemetry from the
 
 ::right::
 
-<div class="flex flex-col items-center justify-center h-full gap-4 pl-6">
-  <div class="text-6xl">🛣️</div>
-  <div class="text-center">
-    <div class="text-gray-400 text-xs uppercase tracking-wider mb-2">What this tells us</div>
-    <div class="text-gray-300 text-sm leading-relaxed">Riders who pair Tripper Dash with the RE App don't stop at one trip. <strong class="text-white">52% of active users</strong> have completed 8+ trips — proof that the product earns its place on the handlebar.</div>
-  </div>
-  <div v-click class="mt-4 p-3 rounded-xl bg-slate-800/60 border border-slate-700 w-full text-center">
-    <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">DIY Guide Available</div>
-    <div class="text-orange-300 font-bold text-sm">Tripper Dash Infotainment Guide — on-stall, hands-on</div>
-  </div>
+<div class="flex flex-col items-center justify-center h-full pl-4">
+  <iframe
+    src="https://www.youtube.com/embed/oZ3VijTtZGo"
+    class="w-full rounded-xl border border-orange-700/30"
+    style="height: 85%; min-height: 260px;"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+  />
 </div>
 
 ---
