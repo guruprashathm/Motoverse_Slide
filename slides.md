@@ -11,7 +11,6 @@ drawings:
   <div class="text-xs uppercase tracking-widest text-amber-500/80 font-semibold">Royal Enfield · Internal Strategy & Pitch Deck</div>
   <h1 class="text-5xl font-black text-white leading-tight">Building the Connected<br/>Rider Ecosystem</h1>
   <p class="text-2xl text-gray-300 font-light">at Motoverse 2026</p>
-  <div class="mt-6 text-xs text-gray-600 uppercase tracking-widest">Navigation Team</div>
 </div>
 
 ---
@@ -101,33 +100,21 @@ transition: fade
 <div class="grid grid-cols-3 gap-4">
   <div v-click class="flex flex-col gap-2 p-4 rounded-2xl bg-gradient-to-b from-cyan-900/30 to-transparent border border-cyan-700/50">
     <div class="text-3xl">🔌</div>
-    <div class="font-bold text-cyan-300 text-base">The Connected Garage</div>
+    <div class="font-bold text-cyan-300 text-base">The Wingman Garage</div>
     <div class="text-xs text-gray-500 uppercase tracking-wider">Live Telemetry & Wingman</div>
     <div class="text-xs text-gray-300 leading-relaxed">Interactive simulators, live vehicle tracking, and Wingman data made visible and tangible. Users experience a connected road trip while standing still.</div>
-    <div class="flex flex-col gap-1 mt-1">
-      <div class="text-[11px] text-cyan-400/80">→ Wingman Persona</div>
-      <div class="text-[11px] text-cyan-400/80">→ Grid Support</div>
-    </div>
   </div>
   <div v-click class="flex flex-col gap-2 p-4 rounded-2xl bg-gradient-to-b from-orange-900/30 to-transparent border border-orange-700/50">
     <div class="text-3xl">🧭</div>
     <div class="font-bold text-orange-300 text-base">The Navigation Lab</div>
     <div class="text-xs text-gray-500 uppercase tracking-wider">Hands-on Route & Venue Tech</div>
     <div class="text-xs text-gray-300 leading-relaxed">Hands-on navigation demos — route replay, walk-to-vehicle, and live challenge games. Demystifies the technology and drives immediate feature adoption.</div>
-    <div class="flex flex-col gap-1 mt-1">
-      <div class="text-[11px] text-orange-400/80">→ RElive</div>
-      <div class="text-[11px] text-orange-400/80">→ Motoverse Navigator</div>
-    </div>
   </div>
   <div v-click class="flex flex-col gap-2 p-4 rounded-2xl bg-gradient-to-b from-purple-900/30 to-transparent border border-purple-700/50">
     <div class="text-3xl">🚀</div>
     <div class="font-bold text-purple-300 text-base">The Future Lounge</div>
     <div class="text-xs text-gray-500 uppercase tracking-wider">Beta Access & Co-creation</div>
     <div class="text-xs text-gray-300 leading-relaxed">Exclusive previews, roadmap transparency, and direct feedback collection. Riders sign up to influence the next generation of RE digital features.</div>
-    <div class="flex flex-col gap-1 mt-1">
-      <div class="text-[11px] text-purple-400/80">→ K1G/L1A Cluster UX</div>
-      <div class="text-[11px] text-purple-400/80">→ Your Idea Could Ship</div>
-    </div>
   </div>
 </div>
 
@@ -211,7 +198,7 @@ transition: slide-left
 
 <div class="flex flex-col items-center justify-center h-full gap-5">
   <div class="text-xs uppercase tracking-widest text-cyan-400 font-bold">Zone 1 of 3</div>
-  <h1 class="text-6xl font-black text-white">The Connected Garage</h1>
+  <h1 class="text-6xl font-black text-white">The Wingman Garage</h1>
   <p class="text-lg text-gray-400 font-light max-w-xl">Making live telemetry tangible in a physical space.<br/>Users experience a connected road trip — while standing completely still.</p>
   <div class="flex flex-col gap-2 mt-2 text-left">
     <div class="flex items-center gap-3 px-4 py-2 rounded-full border border-cyan-700/40 bg-cyan-900/20 text-sm text-cyan-200">
@@ -373,7 +360,6 @@ transition: slide-left
   </div>
   <div class="flex gap-3 mt-2 flex-wrap justify-center">
     <div class="px-4 py-2 rounded-full border border-orange-700/40 bg-orange-900/20 text-sm text-orange-200">🗺️ RElive</div>
-    <div class="px-4 py-2 rounded-full border border-orange-700/40 bg-orange-900/20 text-sm text-orange-200">🅿️ Motoverse Navigator</div>
     <div class="px-4 py-2 rounded-full border border-cyan-700/40 bg-cyan-900/20 text-sm text-cyan-200">🧭 Tripper Education</div>
   </div>
 </div>
@@ -429,72 +415,6 @@ Riders already record their journeys — but they share them through Strava or R
 ---
 layout: iframe
 url: /projects/relive-clone.html
-transition: fade
----
-
----
-layout: two-cols
-transition: fade
----
-
-# Motoverse Navigator
-
-"Walk to My Motorcycle" already exists in FFApp and the Wingman module — Motoverse is where riders discover it firsthand.
-
-<div class="mt-3 flex flex-col gap-3">
-  <div v-click class="flex gap-3 items-start p-3 rounded-xl bg-orange-900/20 border border-orange-700/40">
-    <span class="text-xl">🅿️</span>
-    <div>
-      <div class="font-semibold text-orange-300 text-sm">Solve a Real Venue Problem</div>
-      <div class="text-xs text-gray-300 mt-1">5,000+ bikes parked across the Motoverse grounds. Riders get lost every year. Scan a QR stand at your parking slot, lock your location in REApp, and Walk-to-Vehicle guides you back — a feature that already ships.</div>
-    </div>
-  </div>
-  <div v-click class="flex gap-3 items-start p-3 rounded-xl bg-cyan-900/20 border border-cyan-700/40">
-    <span class="text-xl">🧭</span>
-    <div>
-      <div class="font-semibold text-cyan-300 text-sm">Indoor Stall Navigation</div>
-      <div class="text-xs text-gray-300 mt-1">The same engine that parks your bike also routes you through the venue — animated, step-by-step, like Google Maps but indoors.</div>
-    </div>
-  </div>
-  <div v-click class="flex gap-3 items-start p-3 rounded-xl bg-purple-900/20 border border-purple-700/40">
-    <span class="text-xl">🔁</span>
-    <div>
-      <div class="font-semibold text-purple-300 text-sm">The Familiarity Effect</div>
-      <div class="text-xs text-gray-300 mt-1">Riders who use Walk-to-Vehicle at Motoverse return home already knowing how to use it on their next trip. Zero onboarding friction. The highest-quality feature adoption possible.</div>
-    </div>
-  </div>
-</div>
-
-::right::
-
-<div class="flex flex-col items-center justify-center h-full gap-4 pl-6">
-  <div class="w-full max-w-xs flex flex-col gap-3">
-    <div class="p-4 rounded-xl bg-slate-900/60 border border-orange-700/30 text-center">
-      <div class="text-3xl mb-2">📱</div>
-      <div class="text-xs font-bold text-orange-300 uppercase tracking-wider">Scan QR at parking</div>
-      <div class="text-xs text-gray-400 mt-1">Bike location locked in REApp</div>
-    </div>
-    <div class="text-center text-gray-600 text-lg">↓</div>
-    <div class="p-4 rounded-xl bg-slate-900/60 border border-cyan-700/30 text-center">
-      <div class="text-3xl mb-2">🗺️</div>
-      <div class="text-xs font-bold text-cyan-300 uppercase tracking-wider">Explore the event</div>
-      <div class="text-xs text-gray-400 mt-1">Navigate stall to stall</div>
-    </div>
-    <div class="text-center text-gray-600 text-lg">↓</div>
-    <div class="p-4 rounded-xl bg-slate-900/60 border border-green-700/30 text-center">
-      <div class="text-3xl mb-2">🏍️</div>
-      <div class="text-xs font-bold text-green-300 uppercase tracking-wider">Walk back to bike</div>
-      <div class="text-xs text-gray-400 mt-1">Guided to exact spot</div>
-    </div>
-  </div>
-  <div v-click class="mt-2 px-4 py-2 rounded-full bg-orange-600 text-white text-sm font-semibold">
-    Try it on the next slide →
-  </div>
-</div>
-
----
-layout: iframe
-url: /projects/motoverse_navigator.html
 transition: fade
 ---
 
@@ -670,7 +590,7 @@ Proving we listen. The most-requested fix — battery life — shown live and si
 </div>
 
 ---
-layout: two-cols
+layout: default
 transition: fade
 ---
 
@@ -702,18 +622,6 @@ The numbers that prove riders who try it, keep using it. Real telemetry from the
   <div class="text-2xl font-black text-amber-300 font-mono">17,883,658 km</div>
 </div>
 
-::right::
-
-<div class="flex flex-col items-center justify-center h-full pl-4">
-  <iframe
-    src="https://www.youtube.com/embed/oZ3VijTtZGo"
-    class="w-full rounded-xl border border-orange-700/30"
-    style="height: 85%; min-height: 260px;"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowfullscreen
-  />
-</div>
-
 ---
 layout: default
 class: text-center
@@ -730,7 +638,7 @@ transition: slide-left
     </div>
   </div>
   <div class="flex gap-3 mt-2 flex-wrap justify-center">
-    <div class="px-4 py-2 rounded-full border border-purple-700/40 bg-purple-900/20 text-sm text-purple-200">🖥️ K1G/L1A Cluster UX</div>
+    <div class="px-4 py-2 rounded-full border border-purple-700/40 bg-purple-900/20 text-sm text-purple-200">🖥️ LXG/L1A Cluster UX</div>
     <div class="px-4 py-2 rounded-full border border-purple-700/40 bg-purple-900/20 text-sm text-purple-200">🛣️ Future Roadmap</div>
   </div>
 </div>
@@ -740,16 +648,16 @@ layout: two-cols
 transition: fade
 ---
 
-# K1G / L1A — Vehicle Cluster UX
+# LXG / L1A — Vehicle Cluster UX
 
-The current instrument cluster interaction experience for RE's K1G and L1A platform variants — live and interactive.
+The current instrument cluster interaction experience for RE's LXG and L1A platform variants — live and interactive.
 
 <div class="mt-3 flex flex-col gap-3">
   <div v-click class="flex gap-3 items-start p-3 rounded-xl bg-cyan-900/20 border border-cyan-700/40">
     <span class="text-xl">🖥️</span>
     <div>
       <div class="font-semibold text-cyan-300 text-sm">Current Cluster, Live</div>
-      <div class="text-xs text-gray-300 mt-1">K1G and L1A are the instrument cluster hardware variants across current RE models. This demo shows how riders interact with the real cluster UI — without a motorcycle.</div>
+      <div class="text-xs text-gray-300 mt-1">LXG and L1A are the instrument cluster hardware variants across current RE models. This demo shows how riders interact with the real cluster UI — without a motorcycle.</div>
     </div>
   </div>
   <div v-click class="flex gap-3 items-start p-3 rounded-xl bg-orange-900/20 border border-orange-700/40">
@@ -773,7 +681,7 @@ The current instrument cluster interaction experience for RE's K1G and L1A platf
 <div class="flex flex-col items-center justify-center h-full gap-4 pl-6">
   <div class="text-6xl">🏍️</div>
   <div class="text-center text-gray-400 text-sm leading-relaxed">
-    K1G / L1A platform<br/>
+    LXG / L1A platform<br/>
     → Real cluster interaction<br/>
     → Navigation flow demo<br/>
     → Inform product decisions
@@ -947,6 +855,72 @@ transition: fade
 ---
 
 ---
+layout: two-cols
+transition: fade
+---
+
+# Motoverse Navigator
+
+"Walk to My Motorcycle" already exists in FFApp and the Wingman module — Motoverse is where riders discover it firsthand.
+
+<div class="mt-3 flex flex-col gap-3">
+  <div v-click class="flex gap-3 items-start p-3 rounded-xl bg-orange-900/20 border border-orange-700/40">
+    <span class="text-xl">🅿️</span>
+    <div>
+      <div class="font-semibold text-orange-300 text-sm">Solve a Real Venue Problem</div>
+      <div class="text-xs text-gray-300 mt-1">5,000+ bikes parked across the Motoverse grounds. Riders get lost every year. Scan a QR stand at your parking slot, lock your location in REApp, and Walk-to-Vehicle guides you back — a feature that already ships.</div>
+    </div>
+  </div>
+  <div v-click class="flex gap-3 items-start p-3 rounded-xl bg-cyan-900/20 border border-cyan-700/40">
+    <span class="text-xl">🧭</span>
+    <div>
+      <div class="font-semibold text-cyan-300 text-sm">Indoor Stall Navigation</div>
+      <div class="text-xs text-gray-300 mt-1">The same engine that parks your bike also routes you through the venue — animated, step-by-step, like Google Maps but indoors.</div>
+    </div>
+  </div>
+  <div v-click class="flex gap-3 items-start p-3 rounded-xl bg-purple-900/20 border border-purple-700/40">
+    <span class="text-xl">🔁</span>
+    <div>
+      <div class="font-semibold text-purple-300 text-sm">The Familiarity Effect</div>
+      <div class="text-xs text-gray-300 mt-1">Riders who use Walk-to-Vehicle at Motoverse return home already knowing how to use it on their next trip. Zero onboarding friction. The highest-quality feature adoption possible.</div>
+    </div>
+  </div>
+</div>
+
+::right::
+
+<div class="flex flex-col items-center justify-center h-full gap-4 pl-6">
+  <div class="w-full max-w-xs flex flex-col gap-3">
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-orange-700/30 text-center">
+      <div class="text-3xl mb-2">📱</div>
+      <div class="text-xs font-bold text-orange-300 uppercase tracking-wider">Scan QR at parking</div>
+      <div class="text-xs text-gray-400 mt-1">Bike location locked in REApp</div>
+    </div>
+    <div class="text-center text-gray-600 text-lg">↓</div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-cyan-700/30 text-center">
+      <div class="text-3xl mb-2">🗺️</div>
+      <div class="text-xs font-bold text-cyan-300 uppercase tracking-wider">Explore the event</div>
+      <div class="text-xs text-gray-400 mt-1">Navigate stall to stall</div>
+    </div>
+    <div class="text-center text-gray-600 text-lg">↓</div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-green-700/30 text-center">
+      <div class="text-3xl mb-2">🏍️</div>
+      <div class="text-xs font-bold text-green-300 uppercase tracking-wider">Walk back to bike</div>
+      <div class="text-xs text-gray-400 mt-1">Guided to exact spot</div>
+    </div>
+  </div>
+  <div v-click class="mt-2 px-4 py-2 rounded-full bg-orange-600 text-white text-sm font-semibold">
+    Try it on the next slide →
+  </div>
+</div>
+
+---
+layout: iframe
+url: /projects/motoverse_navigator.html
+transition: fade
+---
+
+---
 layout: default
 transition: fade
 ---
@@ -1077,11 +1051,11 @@ transition: fade
   <div v-click class="grid grid-cols-3 gap-3 w-full max-w-2xl">
     <div class="p-3 rounded-xl bg-cyan-900/20 border border-cyan-700/30 text-center">
       <div class="font-bold text-cyan-300 text-sm">3 Stall Zones</div>
-      <div class="text-xs text-gray-400">Connected Garage · Navigation Lab · Future Lounge</div>
+      <div class="text-xs text-gray-400">Wingman Garage · Navigation Lab · Future Lounge</div>
     </div>
     <div class="p-3 rounded-xl bg-orange-900/20 border border-orange-700/30 text-center">
       <div class="font-bold text-orange-300 text-sm">6 Live Demos</div>
-      <div class="text-xs text-gray-400">Wingman · RElive · Navigator · K1G Cluster · Grid · Your Idea</div>
+      <div class="text-xs text-gray-400">Wingman · RElive · Navigator · L1A Cluster · Grid · Your Idea</div>
     </div>
     <div class="p-3 rounded-xl bg-purple-900/20 border border-purple-700/30 text-center">
       <div class="font-bold text-purple-300 text-sm">5 Objectives Met</div>
